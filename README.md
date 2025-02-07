@@ -130,6 +130,8 @@ Directory `Examples` contains several demo programs and calibration files to run
 3. Execute the following script to process all the sequences with all sensor configurations:
 ```
 ./euroc_examples
+# 仅测试 MH_01_easy
+ ./Examples/Stereo-Inertial/stereo_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo-Inertial/EuRoC.yaml ~/workspace/datasets/MH_01_easy  ./Examples/Stereo-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereoi
 ```
 
 ## Evaluation
@@ -223,11 +225,11 @@ For an RGB-D input from topics `/camera/rgb/image_raw` and `/camera/depth_regist
   ```
   
   ```
-  rosrun ORB_SLAM3 Stereo_Inertial Vocabulary/ORBvoc.txt Examples/Stereo-Inertial/EuRoC.yaml true
+  rosrun ORB_SLAM3 Stereo_Inertial Vocabulary/ORBvoc.txt Examples/Stereo-Inertial/EuRoC.yaml false
   ```
   
   ```
-  rosbag play --pause V1_02_medium.bag /cam0/image_raw:=/camera/left/image_raw /cam1/image_raw:=/camera/right/image_raw /imu0:=/imu
+  rosbag play --pause ~/workspace/datasets/MH_01_easy.bag /cam0/image_raw:=/camera/left/image_raw /cam1/image_raw:=/camera/right/image_raw /imu0:=/imu
   ```
   
 Once ORB-SLAM3 has loaded the vocabulary, press space in the rosbag tab.
