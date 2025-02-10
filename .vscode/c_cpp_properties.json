@@ -15,7 +15,8 @@
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "msvc-x64",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            //"compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/Examples/ROS/ORB_SLAM3/build/compile_commands.json"
         }
     ],
     "version": 4

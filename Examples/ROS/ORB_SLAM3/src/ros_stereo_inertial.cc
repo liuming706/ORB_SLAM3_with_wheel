@@ -89,7 +89,9 @@ int main(int argc, char **argv)
     std::string sbRect(argv[3]);
     if (argc == 5) {
         std::string sbEqual(argv[4]);
-        if (sbEqual == "true") bEqual = true;
+        if (sbEqual == "true") {
+            bEqual = true;
+        }
     }
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.

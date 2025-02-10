@@ -49,3 +49,14 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
 make -j
 
+echo "Building ROS nodes"
+cd ..
+source /opt/ros/noetic/setup.bash
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:`pwd`/Examples/ROS
+cd Examples/ROS/ORB_SLAM3
+mkdir -p build
+cd build
+cmake .. -DROS_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
+make -j
+cd ../../../
+
