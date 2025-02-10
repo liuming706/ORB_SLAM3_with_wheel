@@ -12,18 +12,13 @@ set(LIB_SRCS
     datrie/fileutils.c
     datrie/tail.c
     datrie/trie.c
-    datrie/trie-string.c
-)
+    datrie/trie-string.c)
 
-set(LIB_HDRS
-    datrie/alpha-map.h
-    datrie/trie.h
-    datrie/triedefs.h
-    datrie/typedefs.h
-)
+set(LIB_HDRS datrie/alpha-map.h datrie/trie.h datrie/triedefs.h
+             datrie/typedefs.h)
 
 if(WIN32)
-    list(APPEND LIB_SRCS datrie/libdatrie.def)
+  list(APPEND LIB_SRCS datrie/libdatrie.def)
 endif()
 
 include(CheckIncludeFile)
@@ -49,41 +44,31 @@ check_function_exists(malloc HAVE_MALLOC)
 
 configure_file(config.h.cmake config.h)
 
-include_directories(
-    "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_BINARY_DIR}"
-)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_library(libdatrie ${LIB_SRCS})
 set_target_properties(libdatrie PROPERTIES OUTPUT_NAME "datrie")
 
 if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
-if (NOT SKIP_TOOL)
-    add_executable(trietool "tools/trietool.c" )
-    find_package(Iconv REQUIRED)
-    target_link_libraries(trietool PRIVATE libdatrie Iconv::Iconv)
-    install(
-        TARGETS trietool
-        RUNTIME DESTINATION bin
-    )
+if(NOT SKIP_TOOL)
+  add_executable(trietool "tools/trietool.c")
+  find_package(Iconv REQUIRED)
+  target_link_libraries(trietool PRIVATE libdatrie Iconv::Iconv)
+  install(TARGETS trietool RUNTIME DESTINATION bin)
 endif()
 
 install(
   TARGETS libdatrie
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
-if (NOT SKIP_HEADERS)
-    install(
-        FILES ${LIB_HDRS}
-        DESTINATION "include/datrie"
-    )
+if(NOT SKIP_HEADERS)
+  install(FILES ${LIB_HDRS} DESTINATION "include/datrie")
 endif()
 
 set(prefix "${CMAKE_INSTALL_PREFIX}")
@@ -91,7 +76,5 @@ set(exec_prefix "\${prefix}")
 set(libdir "\${prefix}/lib")
 set(includedir "\${prefix}/include")
 configure_file(datrie-0.2.pc.in datrie-0.2.pc)
-install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/datrie-0.2.pc"
-    DESTINATION "lib/pkgconfig"
-)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/datrie-0.2.pc"
+        DESTINATION "lib/pkgconfig")

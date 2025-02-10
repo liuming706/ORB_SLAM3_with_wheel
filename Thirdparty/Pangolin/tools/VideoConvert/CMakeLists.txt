@@ -5,11 +5,11 @@ include_directories(${Pangolin_INCLUDE_DIRS})
 add_executable(VideoConvert main.cpp)
 target_link_libraries(VideoConvert ${Pangolin_LIBRARIES})
 
-#######################################################
-## Install
+# ##############################################################################
+# Install
 
-install(TARGETS VideoConvert
+install(
+  TARGETS VideoConvert
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

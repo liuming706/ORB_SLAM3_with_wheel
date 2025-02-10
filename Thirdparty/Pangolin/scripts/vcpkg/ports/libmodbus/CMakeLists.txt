@@ -5,7 +5,8 @@ set(LIBMODBUS_VERSION ${PROJECT_VERSION})
 set(LIBMODBUS_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(LIBMODBUS_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(LIBMODBUS_VERSION_MICRO ${PROJECT_VERSION_PATCH})
-configure_file(src/modbus-version.h.in ${CMAKE_CURRENT_BINARY_DIR}/modbus-version.h)
+configure_file(src/modbus-version.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/modbus-version.h)
 
 if(WIN32)
   set(HAVE_ERRNO_H 1)
@@ -56,58 +57,45 @@ endif()
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-
 if(BUILD_SHARED_LIBS)
   add_compile_options(-DDLLBUILD=ON)
 else()
   add_compile_options(-DLIBBUILD=ON)
 endif()
 
-set(MODBUS_PUBLIC_HEADERS
-  src/modbus-rtu.h
-  src/modbus-tcp.h
-  src/modbus.h
-  ${CMAKE_CURRENT_BINARY_DIR}/modbus-version.h
-)
+set(MODBUS_PUBLIC_HEADERS src/modbus-rtu.h src/modbus-tcp.h src/modbus.h
+                          ${CMAKE_CURRENT_BINARY_DIR}/modbus-version.h)
 
-add_library(modbus
-  src/modbus-data.c
-  src/modbus-rtu.c
-  src/modbus-tcp.c
-src/modbus.c)
+add_library(modbus src/modbus-data.c src/modbus-rtu.c src/modbus-tcp.c
+                   src/modbus.c)
 
 target_include_directories(modbus PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(modbus INTERFACE
-  $<INSTALL_INTERFACE:include>
-)
-set_target_properties(modbus PROPERTIES PUBLIC_HEADER "${MODBUS_PUBLIC_HEADERS}")
+target_include_directories(modbus INTERFACE $<INSTALL_INTERFACE:include>)
+set_target_properties(modbus PROPERTIES PUBLIC_HEADER
+                                        "${MODBUS_PUBLIC_HEADERS}")
 
 if(CMAKE_COMPILER_IS_GNUCC)
   target_compile_options(modbus PRIVATE -D_GNU_SOURCE)
 endif()
 
 if(WIN32)
-  target_link_libraries(modbus  wsock32 ws2_32)
+  target_link_libraries(modbus wsock32 ws2_32)
 endif()
 
 set(LIBMODBUS_SOVERSION_VERSION 5.1.0)
 set(LIBMODBUS_SOVERSION_SOVERSION 5)
 
-
-set_target_properties(modbus PROPERTIES
-  VERSION ${LIBMODBUS_SOVERSION_VERSION}
-SOVERSION ${LIBMODBUS_SOVERSION_SOVERSION})
-
+set_target_properties(
+  modbus PROPERTIES VERSION ${LIBMODBUS_SOVERSION_VERSION}
+                    SOVERSION ${LIBMODBUS_SOVERSION_SOVERSION})
 
 install(
   TARGETS modbus
   EXPORT libmodbusConfig
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 install(EXPORT libmodbusConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
-
 
 if(NOT DISABLE_INSTALL_HEADERS)
   install(FILES ${MODBUS_PUBLIC_HEADERS} DESTINATION include/)

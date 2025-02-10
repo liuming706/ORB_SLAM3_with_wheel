@@ -1,17 +1,22 @@
 cmake_minimum_required(VERSION 3.0)
-project(popt VERSION 1.16 LANGUAGES C)
+project(
+  popt
+  VERSION 1.16
+  LANGUAGES C)
 
 set(PACKAGE "popt")
 set(POPT_SYSCONFDIR "C:\\\\")
 set(CMAKE_DEBUG_POSTFIX "d")
 
-file(GLOB SOURCES "popt.c"
-                  "poptconfig.c"
-                  "popthelp.c"
-                  "poptint.c"
-                  "poptparse.c"
-                  "popt.def"
-)
+file(
+  GLOB
+  SOURCES
+  "popt.c"
+  "poptconfig.c"
+  "popthelp.c"
+  "poptint.c"
+  "poptparse.c"
+  "popt.def")
 
 option(POPT_USE_CONFIG "Use configuration file" OFF)
 
@@ -26,7 +31,6 @@ if(POPT_USE_CONFIG)
   check_include_file(libintl.h HAVE_LIBINTL_H)
   check_include_file(mcheck.h HAVE_MCHECK_H)
   check_include_file(unistd.h HAVE_UNISTD_H)
-
 
   check_function_exists(gettext HAVE_GETTEXT)
   check_function_exists(iconv HAVE_ICONV)
@@ -46,14 +50,14 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 include_directories(${CMAKE_BINARY_DIR})
 
 add_library(popt ${SOURCES})
-if (MSVC)
-    target_compile_options(popt PRIVATE /wd4996)
+if(MSVC)
+  target_compile_options(popt PRIVATE /wd4996)
 endif()
 
-install(TARGETS popt
+install(
+  TARGETS popt
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 install(FILES "popt.h" DESTINATION "include")

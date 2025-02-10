@@ -6,11 +6,13 @@ add_library(nanosvg INTERFACE)
 
 set_target_properties(nanosvg PROPERTIES PUBLIC_HEADER "${NANOSVG_HEADERS}")
 
-install(TARGETS nanosvg
+install(
+  TARGETS nanosvg
   EXPORT nanosvgTargets
   PUBLIC_HEADER DESTINATION include)
 
-install(EXPORT nanosvgTargets
+install(
+  EXPORT nanosvgTargets
   FILE unofficial-nanosvg-config.cmake
   NAMESPACE unofficial::nanosvg::
   DESTINATION share/unofficial-nanosvg)

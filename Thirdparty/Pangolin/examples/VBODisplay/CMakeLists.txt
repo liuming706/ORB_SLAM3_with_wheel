@@ -11,9 +11,6 @@ find_package(CUDA QUIET)
 if(CUDA_FOUND)
   cuda_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-  cuda_add_executable(
-    VBODisplay
-    main.cpp kernal.cu
-  )
+  cuda_add_executable(VBODisplay main.cpp kernal.cu)
 
 endif()

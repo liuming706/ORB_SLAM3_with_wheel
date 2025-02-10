@@ -1,28 +1,24 @@
-# - Try to find libTooN
+# * Try to find libTooN
 #
-#  TooN_FOUND - system has libTooN
-#  TooN_INCLUDE_DIR - the libTooN include directories
+# TooN_FOUND - system has libTooN TooN_INCLUDE_DIR - the libTooN include
+# directories
 
-FIND_PATH(
+find_path(
   TooN_INCLUDE_DIR
   NAMES TooN/TooN.h
-  PATHS
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/..
-    /usr/include
-    /usr/local/include
-)
+  PATHS ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/.. /usr/include
+        /usr/local/include)
 
-IF(TooN_INCLUDE_DIR)
-  SET(TooN_FOUND TRUE)
-ENDIF()
+if(TooN_INCLUDE_DIR)
+  set(TooN_FOUND TRUE)
+endif()
 
-IF(TooN_FOUND)
-   IF(NOT TooN_FIND_QUIETLY)
-      MESSAGE(STATUS "Found TooN: ${TooN_INCLUDE_DIR}")
-   ENDIF()
-ELSE()
-   IF(TooN_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "Could not find TooN")
-   ENDIF()
-ENDIF()
+if(TooN_FOUND)
+  if(NOT TooN_FIND_QUIETLY)
+    message(STATUS "Found TooN: ${TooN_INCLUDE_DIR}")
+  endif()
+else()
+  if(TooN_FIND_REQUIRED)
+    message(FATAL_ERROR "Could not find TooN")
+  endif()
+endif()

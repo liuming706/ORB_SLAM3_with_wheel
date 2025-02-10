@@ -6,22 +6,28 @@ if(NOT ANDROID_DEFERRED_ENTRY_SO)
   set(ANDROID_DEFERRED_ENTRY_SO "libpangolin.so")
 endif()
 
-# Configure build environment to automatically generate APK's instead of executables.
+# Configure build environment to automatically generate APK's instead of
+# executables.
 if(ANDROID AND NOT TARGET apk)
-    # virtual targets which we'll add apks and push actions to.
-    add_custom_target( apk )
-    add_custom_target( push )
-    add_custom_target( run )
+  # virtual targets which we'll add apks and push actions to.
+  add_custom_target(apk)
+  add_custom_target(push)
+  add_custom_target(run)
 
-    # Reset output directories to be in binary folder (rather than source)
-    set(LIBRARY_OUTPUT_PATH_ROOT ${CMAKE_CURRENT_BINARY_DIR})
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH_ROOT}/libs/${ANDROID_NDK_ABI_NAME})
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH_ROOT}/libs/${ANDROID_NDK_ABI_NAME})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH_ROOT}/bin/${ANDROID_NDK_ABI_NAME})
-    
-    macro( create_android_manifest_xml filename prog_name package_name activity_name)
-        file( WRITE ${filename}
-"<?xml version=\"1.0\" encoding=\"utf-8\"?>
+  # Reset output directories to be in binary folder (rather than source)
+  set(LIBRARY_OUTPUT_PATH_ROOT ${CMAKE_CURRENT_BINARY_DIR})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+      ${LIBRARY_OUTPUT_PATH_ROOT}/libs/${ANDROID_NDK_ABI_NAME})
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
+      ${LIBRARY_OUTPUT_PATH_ROOT}/libs/${ANDROID_NDK_ABI_NAME})
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+      ${LIBRARY_OUTPUT_PATH_ROOT}/bin/${ANDROID_NDK_ABI_NAME})
+
+  macro(create_android_manifest_xml filename prog_name package_name
+        activity_name)
+    file(
+      WRITE ${filename}
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <!-- BEGIN_INCLUDE(manifest) -->
 <manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"
         package=\"${package_name}.${prog_name}\"
@@ -57,14 +63,15 @@ if(ANDROID AND NOT TARGET apk)
         </activity>
     </application>
 
-</manifest> 
-<!-- END_INCLUDE(manifest) -->" )        
-    endmacro()
+</manifest>
+<!-- END_INCLUDE(manifest) -->")
+  endmacro()
 
-    macro( create_bootstrap_library prog_name package_name)
-        set(bootstrap_cpp "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_start.cpp" )
-        file( WRITE ${bootstrap_cpp}
-"#include <android/native_activity.h>
+  macro(create_bootstrap_library prog_name package_name)
+    set(bootstrap_cpp "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_start.cpp")
+    file(
+      WRITE ${bootstrap_cpp}
+      "#include <android/native_activity.h>
 #include <android/log.h>
 #include <dlfcn.h>
 #include <errno.h>
@@ -102,144 +109,154 @@ void ANativeActivity_onCreate(ANativeActivity * app, void * ud, size_t udsize) {
             LOGE( \"Unable to find compatible entry point\" );
         }
     }
-}" )
-        add_library( "${prog_name}_start" SHARED ${bootstrap_cpp} )
-        target_link_libraries( "${prog_name}_start" android log )
-        add_dependencies( ${prog_name} "${prog_name}_start" )
-    endmacro()
+}")
+    add_library("${prog_name}_start" SHARED ${bootstrap_cpp})
+    target_link_libraries("${prog_name}_start" android log)
+    add_dependencies(${prog_name} "${prog_name}_start")
+  endmacro()
 
-    macro( android_update android_project_name)
-        # Find which android platforms are available.
-        execute_process(
-            COMMAND android list targets -c
-            OUTPUT_VARIABLE android_target_list
-        )
+  macro(android_update android_project_name)
+    # Find which android platforms are available.
+    execute_process(COMMAND android list targets -c
+                    OUTPUT_VARIABLE android_target_list)
 
-        # Pick first platform from this list.
-        string(REGEX MATCH "^[^\n]+" android_target "${android_target_list}" )
-        message(STATUS "Android Target: ${android_target}")
-        
-        if( NOT "${android_target}" STREQUAL "" )        
-            # Generate ant build scripts for making APK
-            execute_process(
-                COMMAND android update project --name ${android_project_name} --path . --target ${android_target} --subprojects
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            )
-        else()
-            message( FATAL_ERROR "No Android SDK platforms found. Please install an Android platform SDK. On Linux, run 'android'." )
-        endif()
-    endmacro()
+    # Pick first platform from this list.
+    string(REGEX MATCH "^[^\n]+" android_target "${android_target_list}")
+    message(STATUS "Android Target: ${android_target}")
 
-    # Override add_executable to build android .so instead!
-    macro( add_executable prog_name)
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME})
-        add_library( ${prog_name} SHARED ${ARGN} )
+    if(NOT "${android_target}" STREQUAL "")
+      # Generate ant build scripts for making APK
+      execute_process(
+        COMMAND android update project --name ${android_project_name} --path .
+                --target ${android_target} --subprojects
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    else()
+      message(
+        FATAL_ERROR
+          "No Android SDK platforms found. Please install an Android platform SDK. On Linux, run 'android'."
+      )
+    endif()
+  endmacro()
 
-        # Add required link libs for android
-        target_link_libraries(${prog_name} log android )
+  # Override add_executable to build android .so instead!
+  macro(add_executable prog_name)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
+        ${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME})
+    add_library(${prog_name} SHARED ${ARGN})
 
-        # Create manifest required for APK
-        create_android_manifest_xml(
-            "${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml" "${prog_name}"
-            "${ANDROID_PACKAGE_NAME}" "${prog_name}"
-        )
+    # Add required link libs for android
+    target_link_libraries(${prog_name} log android)
 
-        # Create library that will launch this program and load shared libs
-        create_bootstrap_library( ${prog_name} ${ANDROID_PACKAGE_NAME} )
+    # Create manifest required for APK
+    create_android_manifest_xml(
+      "${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml" "${prog_name}"
+      "${ANDROID_PACKAGE_NAME}" "${prog_name}")
 
-        # Generate ant build system for APK
-        android_update( ${prog_name} )
+    # Create library that will launch this program and load shared libs
+    create_bootstrap_library(${prog_name} ${ANDROID_PACKAGE_NAME})
 
-        # Target to invoke ant build system for APK
-        set( APK_FILE "${CMAKE_CURRENT_BINARY_DIR}/bin/${prog_name}-debug.apk" )
-        add_custom_command(
-            OUTPUT ${APK_FILE}
-            COMMAND ant debug
-            DEPENDS ${prog_name}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
+    # Generate ant build system for APK
+    android_update(${prog_name})
 
-        # Target to install on device
-        add_custom_target( ${prog_name}-apk
-            DEPENDS ${APK_FILE}
-        )
-        add_dependencies(apk ${prog_name}-apk)
+    # Target to invoke ant build system for APK
+    set(APK_FILE "${CMAKE_CURRENT_BINARY_DIR}/bin/${prog_name}-debug.apk")
+    add_custom_command(
+      OUTPUT ${APK_FILE}
+      COMMAND ant debug
+      DEPENDS ${prog_name}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-        # Target to install on device
-        add_custom_target( ${prog_name}-push
-            COMMAND adb install -r ${APK_FILE}
-            DEPENDS ${APK_FILE}
-        )
-        add_dependencies(push ${prog_name}-push)
+    # Target to install on device
+    add_custom_target(${prog_name}-apk DEPENDS ${APK_FILE})
+    add_dependencies(apk ${prog_name}-apk)
 
-        # install and run on device
-        add_custom_target( ${prog_name}-run
-            COMMAND adb shell am start -n ${ANDROID_PACKAGE_NAME}.${prog_name}/android.app.NativeActivity
-            DEPENDS ${prog_name}-push
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        )
-        add_dependencies(run ${prog_name}-run)
+    # Target to install on device
+    add_custom_target(
+      ${prog_name}-push
+      COMMAND adb install -r ${APK_FILE}
+      DEPENDS ${APK_FILE})
+    add_dependencies(push ${prog_name}-push)
 
-        # Flag to package dependent libs
-        set_property(TARGET ${prog_name} APPEND PROPERTY MAKE_APK 1 )        
+    # install and run on device
+    add_custom_target(
+      ${prog_name}-run
+      COMMAND adb shell am start -n
+              ${ANDROID_PACKAGE_NAME}.${prog_name}/android.app.NativeActivity
+      DEPENDS ${prog_name}-push
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    add_dependencies(run ${prog_name}-run)
 
-        # Clear shared library loading header
-        file( WRITE "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h" "")
-    endmacro()
+    # Flag to package dependent libs
+    set_property(
+      TARGET ${prog_name}
+      APPEND
+      PROPERTY MAKE_APK 1)
 
-    macro( package_with_target prog_name lib_path )
-        # Mark lib_path as dependent of prog_name
-        set_property(TARGET ${prog_name} APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE ${lib_path} )
+    # Clear shared library loading header
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h" "")
+  endmacro()
 
-        # If prog_name is to be packaged, add file copy command to package .so's.
-        get_target_property( package_dependent_libs ${prog_name} MAKE_APK )
-        if( package_dependent_libs )
-            get_filename_component(target_filename ${lib_path} NAME)
-            file( APPEND ${depend_file} "load_lib(LIB_PATH \"${target_filename}\" );\n")
-            add_custom_command(TARGET ${prog_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${lib_path} "${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME}/"
-            )
-        endif()
-    endmacro()
+  macro(package_with_target prog_name lib_path)
+    # Mark lib_path as dependent of prog_name
+    set_property(
+      TARGET ${prog_name}
+      APPEND
+      PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE ${lib_path})
 
-    macro( add_to_depend_libs prog_name depend_file lib_name )
-        # Recursively Process dependents of lib_name
-        get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE)
-        if(NOT TARGET_LIBS)
-            get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)
-        endif()
-        if(NOT TARGET_LIBS)
-            get_target_property(TARGET_LIBS ${lib_name} IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG)
-        endif()
+    # If prog_name is to be packaged, add file copy command to package .so's.
+    get_target_property(package_dependent_libs ${prog_name} MAKE_APK)
+    if(package_dependent_libs)
+      get_filename_component(target_filename ${lib_path} NAME)
+      file(APPEND ${depend_file}
+           "load_lib(LIB_PATH \"${target_filename}\" );\n")
+      add_custom_command(
+        TARGET ${prog_name}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_path}
+                "${CMAKE_CURRENT_BINARY_DIR}/libs/${ANDROID_NDK_ABI_NAME}/")
+    endif()
+  endmacro()
 
-        foreach(SUBLIB ${TARGET_LIBS})
-            if(SUBLIB)
-                add_to_depend_libs( ${prog_name} ${depend_file} ${SUBLIB} )
-            endif()
-        endforeach()
+  macro(add_to_depend_libs prog_name depend_file lib_name)
+    # Recursively Process dependents of lib_name
+    get_target_property(TARGET_LIBS ${lib_name}
+                        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE)
+    if(NOT TARGET_LIBS)
+      get_target_property(TARGET_LIBS ${lib_name}
+                          IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)
+    endif()
+    if(NOT TARGET_LIBS)
+      get_target_property(TARGET_LIBS ${lib_name}
+                          IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG)
+    endif()
 
-        # Check if lib itself is an external shared library
-        if("${lib_name}" MATCHES "\\.so$")
-            package_with_target( ${prog_name} ${lib_name} )
-        endif()
+    foreach(SUBLIB ${TARGET_LIBS})
+      if(SUBLIB)
+        add_to_depend_libs(${prog_name} ${depend_file} ${SUBLIB})
+      endif()
+    endforeach()
 
-        # Check if lib itself is an internal shared library
-        get_target_property(TARGET_LIB ${lib_name} LOCATION)
-        if("${TARGET_LIB}" MATCHES "\\.so$")
-            package_with_target( ${prog_name} ${TARGET_LIB} )
-        endif()
-    endmacro()
+    # Check if lib itself is an external shared library
+    if("${lib_name}" MATCHES "\\.so$")
+      package_with_target(${prog_name} ${lib_name})
+    endif()
 
-    macro( target_link_libraries prog_name)
-        # _target_link_libraries corresponds to original
-        _target_link_libraries( ${prog_name} ${ARGN} )
+    # Check if lib itself is an internal shared library
+    get_target_property(TARGET_LIB ${lib_name} LOCATION)
+    if("${TARGET_LIB}" MATCHES "\\.so$")
+      package_with_target(${prog_name} ${TARGET_LIB})
+    endif()
+  endmacro()
 
-        # Recursively process dependencies
-        set(depend_file "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h" )
-        foreach( LIB ${ARGN} )
-            add_to_depend_libs( ${prog_name} ${depend_file} ${LIB} )
-        endforeach()
-    endmacro()
+  macro(target_link_libraries prog_name)
+    # _target_link_libraries corresponds to original
+    _target_link_libraries(${prog_name} ${ARGN})
+
+    # Recursively process dependencies
+    set(depend_file "${CMAKE_CURRENT_BINARY_DIR}/${prog_name}_shared_load.h")
+    foreach(LIB ${ARGN})
+      add_to_depend_libs(${prog_name} ${depend_file} ${LIB})
+    endforeach()
+  endmacro()
 
 endif()

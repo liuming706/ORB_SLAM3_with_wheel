@@ -1,63 +1,62 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
-PROJECT(dpdk C)
+cmake_minimum_required(VERSION 3.9)
+project(dpdk C)
 
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
-LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}")
 
-INCLUDE(ProcessorCount)
-PROCESSORCOUNT(PROCS)
+include(ProcessorCount)
+ProcessorCount(PROCS)
 
-#ARCH can be: i686, x86_64, ppc_64, arm64
-#MACHINE can be: native, power8, armv8a
-#EXECENV can be: linuxapp, bsdapp
-#TOOLCHAIN can be: gcc, icc
+# ARCH can be: i686, x86_64, ppc_64, arm64 MACHINE can be: native, power8,
+# armv8a EXECENV can be: linuxapp, bsdapp TOOLCHAIN can be: gcc, icc
 
-SET(ARCH x86_64)
-SET(MACHINE native)
-SET(EXECENV linuxapp)
-SET(TOOLCHAIN gcc)
+set(ARCH x86_64)
+set(MACHINE native)
+set(EXECENV linuxapp)
+set(TOOLCHAIN gcc)
 
-IF (CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
-    SET(ARCH "i686")
-ELSEIF (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
-    SET(MACHINE arm8a)
-ELSEIF (CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)64")
-    SET(MACHINE power8)
-    SET(ARCH ppc_64)
-ENDIF ()
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
+  set(ARCH "i686")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+  set(MACHINE arm8a)
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)64")
+  set(MACHINE power8)
+  set(ARCH ppc_64)
+endif()
 
-IF (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-    SET(EXECENV bsdapp)
-ENDIF ()
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+  set(EXECENV bsdapp)
+endif()
 
-FIND_PACKAGE(Numa REQUIRED)
-FIND_PROGRAM(MAKE make)
+find_package(Numa REQUIRED)
+find_program(MAKE make)
 
-SET(DPDK_CFLAGS "-fPIC")
-IF (CMAKE_BUILD_TYPE STREQUAL Debug)
-    STRING(APPEND ${DPDK_CFLAGS} "-O0 -g")
-ENDIF ()
+set(DPDK_CFLAGS "-fPIC")
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  string(APPEND ${DPDK_CFLAGS} "-O0 -g")
+endif()
 
-SET(DPDK_TARGET ${ARCH}-${MACHINE}-${EXECENV}-${TOOLCHAIN})
-#SET(DPDK_CONFIG O=${CMAKE_BUILD_TYPE}/build T=${DPDK_TARGET})
-SET(DPDK_CONFIG "T=${DPDK_TARGET}")
+set(DPDK_TARGET ${ARCH}-${MACHINE}-${EXECENV}-${TOOLCHAIN})
+# SET(DPDK_CONFIG O=${CMAKE_BUILD_TYPE}/build T=${DPDK_TARGET})
+set(DPDK_CONFIG "T=${DPDK_TARGET}")
 
-IF (SOURCE_PATH)
-    SET(CMAKE_SOURCE_DIR ${SOURCE_PATH})
-ENDIF ()
+if(SOURCE_PATH)
+  set(CMAKE_SOURCE_DIR ${SOURCE_PATH})
+endif()
 
-ADD_CUSTOM_TARGET(dpdk-configure
-                  COMMAND ${MAKE} config ${DPDK_CONFIG}
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
-                  VERBATIM
-                  )
+add_custom_target(
+  dpdk-configure
+  COMMAND ${MAKE} config ${DPDK_CONFIG}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
+  VERBATIM)
 
-ADD_CUSTOM_TARGET(dpdk ALL
-                  COMMAND ${MAKE} EXTRA_CFLAGS=\"${DPDK_CFLAGS}\" MAKEFLAGS=\"${DPDK_CONFIG} -j ${PROCS}\"
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
-                  )
+add_custom_target(
+  dpdk ALL
+  COMMAND ${MAKE} EXTRA_CFLAGS=\"${DPDK_CFLAGS}\" MAKEFLAGS=\"${DPDK_CONFIG} -j
+          ${PROCS}\"
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/)
 
-ADD_DEPENDENCIES(dpdk dpdk-configure)
+add_dependencies(dpdk dpdk-configure)
 
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib
         DESTINATION ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/)

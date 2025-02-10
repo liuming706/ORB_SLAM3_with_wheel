@@ -1,33 +1,23 @@
 # Try to find the OpenEXR v2 lib and include files
 #
-# OpenEXR_INCLUDE_DIR
-# OpenEXR_LIBRARIES
-# OpenEXR_FOUND
+# OpenEXR_INCLUDE_DIR OpenEXR_LIBRARIES OpenEXR_FOUND
 
-FIND_PATH( OpenEXR_INCLUDE_DIR ImfHeader.h
-  /usr/include
-  /usr/local/include
-  PATH_SUFFIXES OpenEXR
-)
+find_path(OpenEXR_INCLUDE_DIR ImfHeader.h /usr/include /usr/local/include
+          PATH_SUFFIXES OpenEXR)
 
-FIND_LIBRARY( OpenEXR_LIBRARY IlmImf
-  /usr/lib64
-  /usr/lib
-  /usr/local/lib
-)
+find_library(OpenEXR_LIBRARY IlmImf /usr/lib64 /usr/lib /usr/local/lib)
 
-IF(OpenEXR_INCLUDE_DIR AND OpenEXR_LIBRARY)
-  SET( OpenEXR_FOUND TRUE )
-  SET( OpenEXR_LIBRARIES ${OpenEXR_LIBRARY} )
-ENDIF()
+if(OpenEXR_INCLUDE_DIR AND OpenEXR_LIBRARY)
+  set(OpenEXR_FOUND TRUE)
+  set(OpenEXR_LIBRARIES ${OpenEXR_LIBRARY})
+endif()
 
-IF(OpenEXR_FOUND)
-   IF(NOT OpenEXR_FIND_QUIETLY)
-      MESSAGE(STATUS "Found OpenEXR: ${OpenEXR_LIBRARY}")
-   ENDIF(NOT OpenEXR_FIND_QUIETLY)
-ELSE(OpenEXR_FOUND)
-   IF(OpenEXR_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "Could not find libOpenEXR")
-   ENDIF(OpenEXR_FIND_REQUIRED)
-ENDIF(OpenEXR_FOUND)
-
+if(OpenEXR_FOUND)
+  if(NOT OpenEXR_FIND_QUIETLY)
+    message(STATUS "Found OpenEXR: ${OpenEXR_LIBRARY}")
+  endif(NOT OpenEXR_FIND_QUIETLY)
+else(OpenEXR_FOUND)
+  if(OpenEXR_FIND_REQUIRED)
+    message(FATAL_ERROR "Could not find libOpenEXR")
+  endif(OpenEXR_FIND_REQUIRED)
+endif(OpenEXR_FOUND)

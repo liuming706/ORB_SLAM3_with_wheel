@@ -1,13 +1,9 @@
-cmake_minimum_required (VERSION 3.9)
-project (tre)
+cmake_minimum_required(VERSION 3.9)
+project(tre)
 
-set (HEADERS
-    lib/regex.h
-    include/tre/tre.h
-    include/tre/tre-config.h
-)
+set(HEADERS lib/regex.h include/tre/tre.h include/tre/tre-config.h)
 
-set (SRCS
+set(SRCS
     lib/regcomp.c
     lib/regerror.c
     lib/regexec.c
@@ -20,12 +16,12 @@ set (SRCS
     lib/tre-parse.c
     lib/tre-stack.c
     lib/xmalloc.c
-    win32/tre.def
-)
+    win32/tre.def)
 
 include_directories(win32 include/tre)
-add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DHAVE_CONFIG_H)
-if (WIN32)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
+                -DHAVE_CONFIG_H)
+if(WIN32)
   add_definitions(-DHAVE_MALLOC_H)
 endif()
 add_library(tre ${SRCS})
@@ -34,7 +30,6 @@ install(
   TARGETS tre
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 install(FILES ${HEADERS} DESTINATION include/tre)

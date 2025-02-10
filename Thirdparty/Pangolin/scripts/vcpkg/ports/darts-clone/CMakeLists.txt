@@ -7,23 +7,18 @@ endif()
 
 add_library(darts src/darts.cc)
 
-target_include_directories(darts
-    PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+target_include_directories(
+  darts
+  PUBLIC $<INSTALL_INTERFACE:include>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 install(
   TARGETS darts
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 if(NOT DISABLE_INSTALL_HEADERS)
-  install(
-    DIRECTORY include/ DESTINATION include/
-  )
+  install(DIRECTORY include/ DESTINATION include/)
 endif()

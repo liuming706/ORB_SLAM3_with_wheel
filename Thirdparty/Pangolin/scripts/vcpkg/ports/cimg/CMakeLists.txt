@@ -1,21 +1,22 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
+cmake_minimum_required(VERSION 3.9)
 project(CImg)
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-target_include_directories(${PROJECT_NAME} INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-
-install(TARGETS ${PROJECT_NAME}
-    EXPORT CImgExport
-    INCLUDES DESTINATION include
-)
-
-install(EXPORT CImgExport FILE ${PROJECT_NAME}Config.cmake NAMESPACE ${PROJECT_NAME}:: DESTINATION share/cimg)
+target_include_directories(
+  ${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 install(
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/CImg.h
-    DESTINATION include
-)
+  TARGETS ${PROJECT_NAME}
+  EXPORT CImgExport
+  INCLUDES
+  DESTINATION include)
+
+install(
+  EXPORT CImgExport
+  FILE ${PROJECT_NAME}Config.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION share/cimg)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/CImg.h DESTINATION include)

@@ -1,9 +1,10 @@
 function(vcpkg_get_dep_info PORT VCPKG_TRIPLET_ID)
-    message("d8187afd-ea4a-4fc3-9aa4-a6782e1ed9af")
-    vcpkg_triplet_file(${VCPKG_TRIPLET_ID})
+  message("d8187afd-ea4a-4fc3-9aa4-a6782e1ed9af")
+  vcpkg_triplet_file(${VCPKG_TRIPLET_ID})
 
-    # GUID used as a flag - "cut here line"
-    message("c35112b6-d1ba-415b-aa5d-81de856ef8eb
+  # GUID used as a flag - "cut here line"
+  message(
+    "c35112b6-d1ba-415b-aa5d-81de856ef8eb
 VCPKG_TARGET_ARCHITECTURE=${VCPKG_TARGET_ARCHITECTURE}
 VCPKG_CMAKE_SYSTEM_NAME=${VCPKG_CMAKE_SYSTEM_NAME}
 VCPKG_CMAKE_SYSTEM_VERSION=${VCPKG_CMAKE_SYSTEM_VERSION}

@@ -1,6 +1,8 @@
 set(VCPKG_POLICY_EMPTY_PACKAGE enabled)
 
-message(FATAL_ERROR "The sciter port is deprecated by upstream and conflicts with upstream's replacement.
+message(
+  FATAL_ERROR
+    "The sciter port is deprecated by upstream and conflicts with upstream's replacement.
 
 Upstream has stopped active development of sciter and instead encourage users to move to a new library Sciter.JS that uses javascript as the internal scripting language (sciter-js in vcpkg).
 

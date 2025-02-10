@@ -5,14 +5,9 @@ project(plib VERSION 1.8.5)
 set(CMAKE_DEBUG_POSTFIX d)
 
 # Sources & Headers
-set(fnt_SOURCES
-    src/fnt/fnt.cxx
-    src/fnt/fntBitmap.cxx
-    src/fnt/fntTXF.cxx)
+set(fnt_SOURCES src/fnt/fnt.cxx src/fnt/fntBitmap.cxx src/fnt/fntTXF.cxx)
 
-set(fnt_HEADERS
-    src/fnt/fnt.h
-    src/fnt/fntLocal.h)
+set(fnt_HEADERS src/fnt/fnt.h src/fnt/fntLocal.h)
 
 set(js_SOURCES
     src/js/js.cxx
@@ -23,24 +18,14 @@ set(js_SOURCES
     src/js/jsNone.cxx
     src/js/jsWindows.cxx)
 
-set(js_HEADERS
-    src/js/js.h)
+set(js_HEADERS src/js/js.h)
 
 set(net_SOURCES
-    src/net/netBuffer.cxx
-    src/net/netChannel.cxx
-    src/net/netChat.cxx
-    src/net/netMessage.cxx
-    src/net/netMonitor.cxx
-    src/net/netSocket.cxx)
+    src/net/netBuffer.cxx src/net/netChannel.cxx src/net/netChat.cxx
+    src/net/netMessage.cxx src/net/netMonitor.cxx src/net/netSocket.cxx)
 
-set(net_HEADERS
-    src/net/netBuffer.h
-    src/net/netChannel.h
-    src/net/netChat.h
-    src/net/netMessage.h
-    src/net/netMonitor.h
-    src/net/netSocket.h)
+set(net_HEADERS src/net/netBuffer.h src/net/netChannel.h src/net/netChat.h
+                src/net/netMessage.h src/net/netMonitor.h src/net/netSocket.h)
 
 set(psl_SOURCES
     src/psl/psl.cxx
@@ -81,9 +66,7 @@ set(puAux_SOURCES
     src/puAux/puAuxTriSlider.cxx
     src/puAux/puAuxVerticalMenu.cxx)
 
-set(puAux_HEADERS
-    src/puAux/puAux.h
-    src/puAux/puAuxLocal.h)
+set(puAux_HEADERS src/puAux/puAux.h src/puAux/puAuxLocal.h)
 
 set(pui_SOURCES
     src/pui/pu.cxx
@@ -119,21 +102,14 @@ set(pui_HEADERS
     src/pui/puPW.h
     src/pui/puSDL.h)
 
-set(pw_SOURCES
-    src/pw/pwWindows.cxx)
+set(pw_SOURCES src/pw/pwWindows.cxx)
 
-set(pw_HEADERS
-    src/pw/pw.h)
+set(pw_HEADERS src/pw/pw.h)
 
-set(sg_SOURCES
-    src/sg/sg.cxx
-    src/sg/sgd.cxx
-    src/sg/sgdIsect.cxx
-    src/sg/sgIsect.cxx
-    src/sg/sgPerlinNoise.cxx)
+set(sg_SOURCES src/sg/sg.cxx src/sg/sgd.cxx src/sg/sgdIsect.cxx
+               src/sg/sgIsect.cxx src/sg/sgPerlinNoise.cxx)
 
-set(sg_HEADERS
-    src/sg/sg.h)
+set(sg_HEADERS src/sg/sg.h)
 
 set(sl_SOURCES
     src/sl/slDSP.cxx
@@ -149,12 +125,8 @@ set(sl_SOURCES
     src/sl/slScheduler.cxx
     src/sl/smMixer.cxx)
 
-set(sl_HEADERS
-    src/sl/sl.h
-    src/sl/slMODfile.h
-    src/sl/slMODPrivate.h
-    src/sl/slPortability.h
-    src/sl/sm.h)
+set(sl_HEADERS src/sl/sl.h src/sl/slMODfile.h src/sl/slMODPrivate.h
+               src/sl/slPortability.h src/sl/sm.h)
 
 set(ssg_SOURCES
     src/ssg/ssg.cxx
@@ -283,17 +255,10 @@ set(ssgAux_HEADERS
     src/ssgAux/ssgaWaveSystem.h)
 
 set(ul_SOURCES
-    src/util/ul.cxx
-    src/util/ulClock.cxx
-    src/util/ulError.cxx
-    src/util/ulLinkedList.cxx
-    src/util/ulList.cxx
-    src/util/ulRTTI.cxx)
+    src/util/ul.cxx src/util/ulClock.cxx src/util/ulError.cxx
+    src/util/ulLinkedList.cxx src/util/ulList.cxx src/util/ulRTTI.cxx)
 
-set(ul_HEADERS
-    src/util/ul.h
-    src/util/ulLocal.h
-    src/util/ulRTTI.h)
+set(ul_HEADERS src/util/ul.h src/util/ulLocal.h src/util/ulRTTI.h)
 
 # Create and configure the targets
 add_library(plib_fnt STATIC ${fnt_SOURCES} ${fnt_HEADERS})
@@ -309,12 +274,7 @@ add_library(plib_psl STATIC ${psl_SOURCES} ${psl_HEADERS})
 target_include_directories(plib_psl PRIVATE src/util)
 
 add_library(plib_puAux STATIC ${puAux_SOURCES} ${puAux_HEADERS})
-target_include_directories(plib_puAux PRIVATE
-    src/fnt
-    src/pui
-    src/sg
-    src/util
-)
+target_include_directories(plib_puAux PRIVATE src/fnt src/pui src/sg src/util)
 
 add_library(plib_pui STATIC ${pui_SOURCES} ${pui_HEADERS})
 target_include_directories(plib_pui PRIVATE src/fnt src/sg src/util)
@@ -338,24 +298,33 @@ add_library(plib_ul STATIC ${ul_SOURCES} ${ul_HEADERS})
 
 # Install
 install(
-    TARGETS plib_fnt plib_js plib_net plib_psl plib_puAux plib_pui plib_pw plib_sg plib_sl plib_ssg plib_ssgAux plib_ul
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-)
+  TARGETS plib_fnt
+          plib_js
+          plib_net
+          plib_psl
+          plib_puAux
+          plib_pui
+          plib_pw
+          plib_sg
+          plib_sl
+          plib_ssg
+          plib_ssgAux
+          plib_ul
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
 install(
-    FILES ${fnt_HEADERS}
-          ${js_HEADERS}
-          ${net_HEADERS}
-          ${psl_HEADERS}
-          ${puAux_HEADERS}
-          ${pui_HEADERS}
-          ${pw_HEADERS}
-          ${sg_HEADERS}
-          ${sl_HEADERS}
-          ${ssg_HEADERS}
-          ${ssgAux_HEADERS}
-          ${ul_HEADERS}
-    DESTINATION include/plib
-)
+  FILES ${fnt_HEADERS}
+        ${js_HEADERS}
+        ${net_HEADERS}
+        ${psl_HEADERS}
+        ${puAux_HEADERS}
+        ${pui_HEADERS}
+        ${pw_HEADERS}
+        ${sg_HEADERS}
+        ${sl_HEADERS}
+        ${ssg_HEADERS}
+        ${ssgAux_HEADERS}
+        ${ul_HEADERS}
+  DESTINATION include/plib)

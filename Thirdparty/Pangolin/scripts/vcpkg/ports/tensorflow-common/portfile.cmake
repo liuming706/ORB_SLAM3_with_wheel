@@ -17,10 +17,13 @@ set(TENSORFLOW_FILES
     "${CMAKE_CURRENT_LIST_DIR}/tensorflow-config-shared.cmake.in"
     "${CMAKE_CURRENT_LIST_DIR}/tensorflow-config-static.cmake.in"
     "${CMAKE_CURRENT_LIST_DIR}/tensorflow-config-windows-dll.cmake.in"
-    "${CMAKE_CURRENT_LIST_DIR}/tensorflow-config-windows-lib.cmake.in"
-    )
+    "${CMAKE_CURRENT_LIST_DIR}/tensorflow-config-windows-lib.cmake.in")
 
-file(COPY ${TENSORFLOW_FILES} DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
+file(COPY ${TENSORFLOW_FILES}
+     DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 
 # Use vcpkg's license
-file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/LICENSE.txt" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
+file(
+  INSTALL "${CMAKE_CURRENT_LIST_DIR}/LICENSE.txt"
+  DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+  RENAME copyright)

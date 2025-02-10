@@ -2,11 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 project(discord_game_sdk_cpp)
 
-find_library(SDK_LIB
-    "discord_game_sdk"
-    PATHS "${SDK_LIB_FOLDER}"
-    NO_DEFAULT_PATH
-)
+find_library(
+  SDK_LIB "discord_game_sdk"
+  PATHS "${SDK_LIB_FOLDER}"
+  NO_DEFAULT_PATH)
 
 file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/cpp/*.cpp")
 file(GLOB_RECURSE HDR_FILES "${PROJECT_SOURCE_DIR}/*.h")

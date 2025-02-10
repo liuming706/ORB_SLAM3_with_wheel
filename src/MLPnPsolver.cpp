@@ -52,8 +52,7 @@
 // MLPnP算法，极大似然PnP算法，解决PnP问题，用在重定位中，不用运动的先验知识来估计相机位姿
 // 基于论文《MLPNP - A REAL-TIME MAXIMUM LIKELIHOOD SOLUTION TO THE PERSPECTIVE-N-POINT PROBLEM》
 
-namespace ORB_SLAM3
-{
+namespace ORB_SLAM3 {
 /**
  * @brief MLPnP 构造函数
  *
@@ -65,37 +64,34 @@ namespace ORB_SLAM3
  * @param[in] N                         所有2D点的个数
  * @param[in] mpCamera                  相机模型，利用该变量对3D点进行投影
  */
-MLPnPsolver::MLPnPsolver(const Frame &F,                                // 输入帧的数据
-                            const vector<MapPoint *> &vpMapPointMatches // 待匹配的特征点，是当前帧和候选关键帧用BoW进行快速匹配的结果
-                            ) : mnInliersi(0),                          // 内点的个数
-                                mnIterations(0),                        // Ransac迭代次数
-                                mnBestInliers(0),                       // 最佳内点数
-                                N(0),                                   // 所有2D点的个数
-                                mpCamera(F.mpCamera)                    // 相机模型，利用该变量对3D点进行投影
+MLPnPsolver::MLPnPsolver(const Frame &F,  // 输入帧的数据
+                         const vector<MapPoint *> &vpMapPointMatches  // 待匹配的特征点，是当前帧和候选关键帧用BoW进行快速匹配的结果
+                         ) :
+    mnInliersi(0),        // 内点的个数
+    mnIterations(0),      // Ransac迭代次数
+    mnBestInliers(0),     // 最佳内点数
+    N(0),                 // 所有2D点的个数
+    mpCamera(F.mpCamera)  // 相机模型，利用该变量对3D点进行投影
 {
-    mvpMapPointMatches = vpMapPointMatches;           // 待匹配的特征点，是当前帧和候选关键帧用BoW进行快速匹配的结果
-    mvBearingVecs.reserve(F.mvpMapPoints.size());     // 初始化3D点的单位向量
-    mvP2D.reserve(F.mvpMapPoints.size());             // 初始化3D点的投影点
-    mvSigma2.reserve(F.mvpMapPoints.size());          // 初始化卡方检验中的sigma值
-    mvP3Dw.reserve(F.mvpMapPoints.size());            // 初始化3D点坐标
-    mvKeyPointIndices.reserve(F.mvpMapPoints.size()); // 初始化3D点的索引值
-    mvAllIndices.reserve(F.mvpMapPoints.size());      // 初始化所有索引值
+    mvpMapPointMatches = vpMapPointMatches;  // 待匹配的特征点，是当前帧和候选关键帧用BoW进行快速匹配的结果
+    mvBearingVecs.reserve(F.mvpMapPoints.size());      // 初始化3D点的单位向量
+    mvP2D.reserve(F.mvpMapPoints.size());              // 初始化3D点的投影点
+    mvSigma2.reserve(F.mvpMapPoints.size());           // 初始化卡方检验中的sigma值
+    mvP3Dw.reserve(F.mvpMapPoints.size());             // 初始化3D点坐标
+    mvKeyPointIndices.reserve(F.mvpMapPoints.size());  // 初始化3D点的索引值
+    mvAllIndices.reserve(F.mvpMapPoints.size());       // 初始化所有索引值
 
     // 一些必要的初始化操作
     int idx = 0;
-    for (size_t i = 0, iend = mvpMapPointMatches.size(); i < iend; i++)
-    {
+    for (size_t i = 0, iend = mvpMapPointMatches.size(); i < iend; i++) {
         MapPoint *pMP = vpMapPointMatches[i];
 
         // 如果pMP存在，则接下来初始化一些参数，否则什么都不做
-        if (pMP)
-        {
+        if (pMP) {
             // 判断是否是坏点
-            if (!pMP->isBad())
-            {
+            if (!pMP->isBad()) {
                 // 如果记录的点个数超过总数，则不做任何事情，否则继续记录
-                if (i >= F.mvKeysUn.size())
-                    continue;
+                if (i >= F.mvKeysUn.size()) continue;
                 const cv::KeyPoint &kp = F.mvKeysUn[i];
 
                 // 保存3D点的投影点
@@ -145,15 +141,14 @@ MLPnPsolver::MLPnPsolver(const Frame &F,                                // 输�
 bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInliers, int &nInliers, Eigen::Matrix4f &Tout)
 {
     Tout.setIdentity();
-    bNoMore = false;   // 已经达到最大迭代次数的标志
-    vbInliers.clear(); // 清除保存判断是否是内点的容器
-    nInliers = 0;      // 当前次迭代时的内点数
-                        // N为所有2D点的个数, mRansacMinInliers为正常退出RANSAC迭代过程中最少的inlier数
-                        // Step 1: 判断，如果2D点个数不足以启动RANSAC迭代过程的最小下限，则退出
-    if (N < mRansacMinInliers)
-    {
-        bNoMore = true; // 已经达到最大迭代次数的标志
-        return false;   // 函数退出
+    bNoMore = false;    // 已经达到最大迭代次数的标志
+    vbInliers.clear();  // 清除保存判断是否是内点的容器
+    nInliers = 0;       // 当前次迭代时的内点数
+                   // N为所有2D点的个数, mRansacMinInliers为正常退出RANSAC迭代过程中最少的inlier数
+                   // Step 1: 判断，如果2D点个数不足以启动RANSAC迭代过程的最小下限，则退出
+    if (N < mRansacMinInliers) {
+        bNoMore = true;  // 已经达到最大迭代次数的标志
+        return false;    // 函数退出
     }
 
     // mvAllIndices为所有参与PnP的2D点的索引
@@ -167,8 +162,7 @@ bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInlier
     // 进行迭代的条件:
     // 条件1: 历史进行的迭代次数少于最大迭代值
     // 条件2: 当前进行的迭代次数少于当前函数给定的最大迭代值
-    while (mnIterations < mRansacMaxIts || nCurrentIterations < nIterations)
-    {
+    while (mnIterations < mRansacMaxIts || nCurrentIterations < nIterations) {
         // 迭代次数更新加1，直到达到最大迭代次数
         nCurrentIterations++;
         mnIterations++;
@@ -184,8 +178,7 @@ bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInlier
 
         // Get min set of points
         // 选取最小集,从vAvailableIndices中选取mRansacMinSet个点进行操作，这里应该是6
-        for (short i = 0; i < mRansacMinSet; ++i)
-        {
+        for (short i = 0; i < mRansacMinSet; ++i) {
             // 在所有备选点中随机抽取一个，通过随机抽取索引数组vAvailableIndices的索引[randi]来实现
             int randi = DUtils::Random::RandomInt(0, vAvailableIndices.size() - 1);
 
@@ -199,7 +192,7 @@ bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInlier
             // 把抽取出来的点从所有备选点数组里删除掉，概率论中不放回的操作
             vAvailableIndices[randi] = vAvailableIndices.back();
             vAvailableIndices.pop_back();
-        } // 选取最小集
+        }  // 选取最小集
 
         // By the moment, we are using MLPnP without covariance info
         //  目前为止，还没有使用协方差的信息，所以这里生成一个size=1的值为0的协方差矩阵
@@ -238,14 +231,12 @@ bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInlier
         // 卡方检验内点，和EPnP基本类似
         CheckInliers();
 
-        if (mnInliersi >= mRansacMinInliers)
-        {
+        if (mnInliersi >= mRansacMinInliers) {
             // If it is the best solution so far, save it
             // 如果该结果是目前内点数最多的，说明该结果是目前最好的，保存起来
-            if (mnInliersi > mnBestInliers)
-            {
-                mvbBestInliers = mvbInliersi; // 每个点是否是内点的标记
-                mnBestInliers = mnInliersi;   // 内点个数
+            if (mnInliersi > mnBestInliers) {
+                mvbBestInliers = mvbInliersi;  // 每个点是否是内点的标记
+                mnBestInliers = mnInliersi;    // 内点个数
 
                 cv::Mat Rcw(3, 3, CV_64F, mRi);
                 cv::Mat tcw(3, 1, CV_64F, mti);
@@ -260,35 +251,28 @@ bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInlier
             }
 
             // 用新的内点对相机位姿精求解，提高位姿估计精度，这里如果有足够内点的话，函数直接返回该值，不再继续计算
-            if (Refine())
-            {
+            if (Refine()) {
                 nInliers = mnRefinedInliers;
                 vbInliers = vector<bool>(mvpMapPointMatches.size(), false);
-                for (int i = 0; i < N; i++)
-                {
-                    if (mvbRefinedInliers[i])
-                        vbInliers[mvKeyPointIndices[i]] = true;
+                for (int i = 0; i < N; i++) {
+                    if (mvbRefinedInliers[i]) vbInliers[mvKeyPointIndices[i]] = true;
                 }
                 Tout = mRefinedTcw;
                 return true;
             }
         }
-    } // 迭代
+    }  // 迭代
 
     // Step 3: 选择最小集中效果最好的相机位姿估计结果,如果没有，只能用6个点去计算这个值了
     // 程序运行到这里，说明Refine失败了，说明精求解过程中，内点的个数不满足最小阈值，那就只能在当前结果中选择内点数最多的那个最小集
     // 但是也意味着这样子的结果最终是用6个点来求出来的，近似效果一般
-    if (mnIterations >= mRansacMaxIts)
-    {
+    if (mnIterations >= mRansacMaxIts) {
         bNoMore = true;
-        if (mnBestInliers >= mRansacMinInliers)
-        {
+        if (mnBestInliers >= mRansacMinInliers) {
             nInliers = mnBestInliers;
             vbInliers = vector<bool>(mvpMapPointMatches.size(), false);
-            for (int i = 0; i < N; i++)
-            {
-                if (mvbBestInliers[i])
-                    vbInliers[mvKeyPointIndices[i]] = true;
+            for (int i = 0; i < N; i++) {
+                if (mvbBestInliers[i]) vbInliers[mvKeyPointIndices[i]] = true;
             }
             Tout = mBestTcw;
             return true;
@@ -311,30 +295,28 @@ bool MLPnPsolver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInlier
  * @param[in] th2               卡方检验阈值
  *
  */
-void MLPnPsolver::SetRansacParameters(double probability, int minInliers, int maxIterations, int minSet, float epsilon, float th2)
+void MLPnPsolver::SetRansacParameters(double probability, int minInliers, int maxIterations, int minSet, float epsilon,
+                                      float th2)
 {
-    mRansacProb = probability;      // 模型最大概率值，默认0.9
-    mRansacMinInliers = minInliers; // 内点的最小阈值，默认8
-    mRansacMaxIts = maxIterations;  // 最大迭代次数，默认300
-    mRansacEpsilon = epsilon;       // 理论最少内点个数，这里是按照总数的比例计算，所以epsilon是比例，默认是0.4
-    mRansacMinSet = minSet;         // 每次采样六个点，即最小集应该设置为6，论文里面写着I > 5
+    mRansacProb = probability;       // 模型最大概率值，默认0.9
+    mRansacMinInliers = minInliers;  // 内点的最小阈值，默认8
+    mRansacMaxIts = maxIterations;   // 最大迭代次数，默认300
+    mRansacEpsilon = epsilon;  // 理论最少内点个数，这里是按照总数的比例计算，所以epsilon是比例，默认是0.4
+    mRansacMinSet = minSet;  // 每次采样六个点，即最小集应该设置为6，论文里面写着I > 5
 
-    N = mvP2D.size(); // number of correspondences
+    N = mvP2D.size();  // number of correspondences
 
-    mvbInliersi.resize(N); // 是否是内点的标记位
+    mvbInliersi.resize(N);  // 是否是内点的标记位
 
     // Adjust Parameters according to number of correspondences
     // 计算最少个数点，选择(给定内点数, 最小集, 理论内点数)的最小值
     int nMinInliers = N * mRansacEpsilon;
-    if (nMinInliers < mRansacMinInliers)
-        nMinInliers = mRansacMinInliers;
-    if (nMinInliers < minSet)
-        nMinInliers = minSet;
+    if (nMinInliers < mRansacMinInliers) nMinInliers = mRansacMinInliers;
+    if (nMinInliers < minSet) nMinInliers = minSet;
     mRansacMinInliers = nMinInliers;
 
     // 根据最终得到的"最小内点数"来调整 内点数/总体数 比例epsilon
-    if (mRansacEpsilon < (float)mRansacMinInliers / N)
-        mRansacEpsilon = (float)mRansacMinInliers / N;
+    if (mRansacEpsilon < (float)mRansacMinInliers / N) mRansacEpsilon = (float)mRansacMinInliers / N;
 
     // Set RANSAC iterations according to probability, epsilon, and max iterations
     // 根据给出的各种参数计算RANSAC的理论迭代次数,并且敲定最终在迭代过程中使用的RANSAC最大迭代次数
@@ -348,9 +330,8 @@ void MLPnPsolver::SetRansacParameters(double probability, int minInliers, int ma
     mRansacMaxIts = max(1, min(nIterations, mRansacMaxIts));
 
     // 计算不同图层上的特征点在进行内点检验的时候,所使用的不同判断误差阈值
-    mvMaxError.resize(mvSigma2.size()); // 层数
-    for (size_t i = 0; i < mvSigma2.size(); i++)
-        mvMaxError[i] = mvSigma2[i] * th2; // 不同的尺度，设置不同的最大偏差
+    mvMaxError.resize(mvSigma2.size());                                              // 层数
+    for (size_t i = 0; i < mvSigma2.size(); i++) mvMaxError[i] = mvSigma2[i] * th2;  // 不同的尺度，设置不同的最大偏差
 }
 
 /**
@@ -361,8 +342,7 @@ void MLPnPsolver::CheckInliers()
     mnInliersi = 0;
 
     // 遍历当前帧中所有的匹配点
-    for (int i = 0; i < N; i++)
-    {
+    for (int i = 0; i < N; i++) {
         // 取出对应的3D点和2D点
         point_t p = mvP3Dw[i];
         cv::Point3f P3Dw(p(0), p(1), p(2));
@@ -384,13 +364,10 @@ void MLPnPsolver::CheckInliers()
         float error2 = distX * distX + distY * distY;
 
         // 判定是不是内点
-        if (error2 < mvMaxError[i])
-        {
+        if (error2 < mvMaxError[i]) {
             mvbInliersi[i] = true;
             mnInliersi++;
-        }
-        else
-        {
+        } else {
             mvbInliersi[i] = false;
         }
     }
@@ -405,10 +382,8 @@ bool MLPnPsolver::Refine()
     vector<int> vIndices;
     vIndices.reserve(mvbBestInliers.size());
 
-    for (size_t i = 0; i < mvbBestInliers.size(); i++)
-    {
-        if (mvbBestInliers[i])
-        {
+    for (size_t i = 0; i < mvbBestInliers.size(); i++) {
+        if (mvbBestInliers[i]) {
             vIndices.push_back(i);
         }
     }
@@ -425,8 +400,7 @@ bool MLPnPsolver::Refine()
     // TODO:有什么区别呢？答：肯定有啦，mRansacMinSet只是粗略解，
     // 这里之所以要Refine就是要用所有满足模型的内点来更加精确地近似表达模型
     // 这样求出来的解才会更加准确
-    for (size_t i = 0; i < vIndices.size(); i++)
-    {
+    for (size_t i = 0; i < vIndices.size(); i++) {
         int idx = vIndices[i];
 
         bearingVecs.push_back(mvBearingVecs[idx]);
@@ -450,8 +424,7 @@ bool MLPnPsolver::Refine()
     mnRefinedInliers = mnInliersi;
     mvbRefinedInliers = mvbInliersi;
 
-    if (mnInliersi > mRansacMinInliers)
-    {
+    if (mnInliersi > mRansacMinInliers) {
         cv::Mat Rcw(3, 3, CV_64F, mRi);
         cv::Mat tcw(3, 1, CV_64F, mti);
         Rcw.convertTo(Rcw, CV_32F);
@@ -481,7 +454,7 @@ bool MLPnPsolver::Refine()
  *
  */
 void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, const cov3_mats_t &covMats,
-                                const std::vector<int> &indices, transformation_t &result)
+                              const std::vector<int> &indices, transformation_t &result)
 {
     // Step 1: 判断点的数量是否满足计算条件，否则直接报错
     // 因为每个观测值会产生2个残差，所以至少需要6个点来计算公式12，所以要检验当前的点个数是否满足大于5的条件
@@ -523,8 +496,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
     // 因为内点的索引并非连续，想要方便遍历，必须用连续的索引值，
     // 所以就用了indices[i]嵌套形式，i表示内点数量numberCorrespondences范围内的连续形式
     // indices里面保存的是不连续的内点的索引值
-    for (size_t i = 0; i < numberCorrespondences; i++)
-    {
+    for (size_t i = 0; i < numberCorrespondences; i++) {
         // 当前空间点的单位向量,indices[i]是当前点坐标和向量的索引值，
         bearingVector_t f_current = f[indices[i]];
 
@@ -535,8 +507,8 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
         // 求解方程 Jvr(v) = null(v^T) = [r s]
         // A = U * S * V^T
         // 这里只求解了V的完全解，没有求解U
-        Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>
-            svd_f(f_current.transpose(), Eigen::ComputeFullV);
+        Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_f(f_current.transpose(),
+                                                                                    Eigen::ComputeFullV);
 
         // 取特征值最小的那两个对应的2个特征向量
         //              |r1 s1|
@@ -569,8 +541,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
     // if (minEigenVal < 1e-3 || minEigenVal == 0.0)
     // rankTest.setThreshold(1e-10);
     // 当矩阵S的秩为2时，属于平面条件，
-    if (rankTest.rank() == 2)
-    {
+    if (rankTest.rank() == 2) {
         planar = true;
         // self adjoint is faster and more accurate than general eigen solvers
         // also has closed form solution for 3x3 self-adjoint matrices
@@ -585,29 +556,25 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
         eigenRot.transposeInPlace();
 
         // 公式20： pi' = R_S^T * pi
-        for (size_t i = 0; i < numberCorrespondences; i++)
-            points3.col(i) = eigenRot * points3.col(i);
+        for (size_t i = 0; i < numberCorrespondences; i++) points3.col(i) = eigenRot * points3.col(i);
     }
     //////////////////////////////////////
     // 2. stochastic model
     //////////////////////////////////////
     // Step 4: 计算随机模型中的协方差矩阵
     // 但是作者并没有用到协方差信息
-    Eigen::SparseMatrix<double> P(2 * numberCorrespondences,
-                                    2 * numberCorrespondences);
+    Eigen::SparseMatrix<double> P(2 * numberCorrespondences, 2 * numberCorrespondences);
     bool use_cov = false;
-    P.setIdentity(); // standard
+    P.setIdentity();  // standard
 
     // if we do have covariance information
     // -> fill covariance matrix
     // 如果协方差矩阵的个数等于空间点的个数，说明前面已经计算好了，表示有协方差信息
     // 目前版本是没有用到协方差信息的，所以调用本函数前就把协方差矩阵个数置为1了
-    if (covMats.size() == numberCorrespondences)
-    {
+    if (covMats.size() == numberCorrespondences) {
         use_cov = true;
         int l = 0;
-        for (size_t i = 0; i < numberCorrespondences; ++i)
-        {
+        for (size_t i = 0; i < numberCorrespondences; ++i) {
             // invert matrix
             cov2_mat_t temp = nullspaces[i].transpose() * covMats[i] * nullspaces[i];
             temp = temp.inverse().eval();
@@ -635,21 +602,17 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
     // 如果世界点位于分别跨2个坐标轴的平面上，即所有世界点的一个元素是常数的时候，可简单地忽略矩阵A中对应的列
     // 而且这不影响问题的结构本身，所以在计算公式20： pi' = R_S^T * pi的时候，忽略了r11,r21,r31，即第一列
     // 对应的u只有9个元素 u = [r12, r13, r22, r23, r32, r33, t1, t2, t3]^T 所以A的列个数是9个
-    if (planar)
-    {
+    if (planar) {
         colsA = 9;
         A = Eigen::MatrixXd(rowsA, 9);
-    }
-    else
+    } else
         A = Eigen::MatrixXd(rowsA, 12);
     A.setZero();
 
     // fill design matrix
     // 构造矩阵A，分平面和非平面2种情况
-    if (planar)
-    {
-        for (size_t i = 0; i < numberCorrespondences; ++i)
-        {
+    if (planar) {
+        for (size_t i = 0; i < numberCorrespondences; ++i) {
             // 列表示当前点的坐标
             point_t pt3_current = points3.col(i);
 
@@ -681,11 +644,8 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
             A(2 * i, 8) = nullspaces[i](2, 0);
             A(2 * i + 1, 8) = nullspaces[i](2, 1);
         }
-    }
-    else
-    {
-        for (size_t i = 0; i < numberCorrespondences; ++i)
-        {
+    } else {
+        for (size_t i = 0; i < numberCorrespondences; ++i) {
             point_t pt3_current = points3.col(i);
 
             // 不是平面的情况下，三个列向量都保留求解
@@ -736,7 +696,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
     Eigen::MatrixXd AtPA;
     if (use_cov)
         // 有协方差信息的情况下，一般方程是 A^T*P*A*u = N*u = 0
-        AtPA = A.transpose() * P * A; // setting up the full normal equations seems to be unstable
+        AtPA = A.transpose() * P * A;  // setting up the full normal equations seems to be unstable
     else
         // 无协方差信息的情况下，一般方程是 A^T*A*u = N*u = 0
         AtPA = A.transpose() * A;
@@ -755,15 +715,13 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
     // transformation_t T_final;
     rotation_t Rout;
     translation_t tout;
-    if (planar) // planar case
+    if (planar)  // planar case
     {
         rotation_t tmp;
         // until now, we only estimated
         // row one and two of the transposed rotation matrix
         // 暂时只估计了旋转矩阵的第1行和第2行，先记录到tmp中
-        tmp << 0.0, result1(0, 0), result1(1, 0),
-            0.0, result1(2, 0), result1(3, 0),
-            0.0, result1(4, 0), result1(5, 0);
+        tmp << 0.0, result1(0, 0), result1(1, 0), 0.0, result1(2, 0), result1(3, 0), 0.0, result1(4, 0), result1(5, 0);
         // double scale = 1 / sqrt(tmp.col(1).norm() * tmp.col(2).norm());
         //  row 3
         //  第3行等于第1行和第2行的叉积（这里应该是列，后面转置后成了行）
@@ -791,8 +749,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
 
         // test if we found a good rotation matrix
         // 如果估计出来的旋转矩阵的行列式小于0，则乘以-1（EPnP也是同样的操作）
-        if (Rout1.determinant() < 0)
-            Rout1 *= -1.0;
+        if (Rout1.determinant() < 0) Rout1 *= -1.0;
 
         // rotate this matrix back using the eigen frame
         // 因为是在平面情况下计算的，估计出来的旋转矩阵是要做一个转换的，根据公式(21)，R = Rs*R
@@ -812,8 +769,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
 
         // 这里乘以-1是为了计算4种结果
         Rout1 *= -1;
-        if (Rout1.determinant() < 0.0)
-            Rout1.col(2) *= -1;
+        if (Rout1.determinant() < 0.0) Rout1.col(2) *= -1;
         // now we have to find the best out of 4 combinations
         //         |r11 r12 r13|
         //    R1 = |r21 r22 r23|
@@ -845,14 +801,12 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
 
         // 遍历4种解
         vector<double> normVal(4);
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             point_t reproPt;
             double norms = 0.0;
             // 计算世界点p到切线空间v的投影的残差，对应最小的就是最好的解
             // 用前6个点来验证4种解的残差
-            for (int p = 0; p < 6; ++p)
-            {
+            for (int p = 0; p < 6; ++p) {
                 // 重投影的向量
                 reproPt = Ts[i].block<3, 3>(0, 0) * points3v[p] + Ts[i].block<3, 1>(0, 3);
                 // 变成单位向量
@@ -867,8 +821,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
         }
 
         // 搜索容器中的最小值，并返回该值对应的指针
-        std::vector<double>::iterator
-            findMinRepro = std::min_element(std::begin(normVal), std::end(normVal));
+        std::vector<double>::iterator findMinRepro = std::min_element(std::begin(normVal), std::end(normVal));
 
         // 计算容器头指针到最小值指针的距离，即可作为该最小值的索引值
         int idx = std::distance(std::begin(normVal), findMinRepro);
@@ -876,8 +829,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
         // 得到最终相机位姿估计的结果
         Rout = Ts[idx].block<3, 3>(0, 0);
         tout = Ts[idx].block<3, 1>(0, 3);
-    }
-    else // non-planar
+    } else  // non-planar
     {
         rotation_t tmp;
         // 从AtPA的SVD分解中得到旋转矩阵，先存下来
@@ -885,13 +837,11 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
         //       |r11 r21 r31|
         // tmp = |r12 r22 r32|
         //       |r13 r23 r33|
-        tmp << result1(0, 0), result1(3, 0), result1(6, 0),
-            result1(1, 0), result1(4, 0), result1(7, 0),
-            result1(2, 0), result1(5, 0), result1(8, 0);
+        tmp << result1(0, 0), result1(3, 0), result1(6, 0), result1(1, 0), result1(4, 0), result1(7, 0), result1(2, 0),
+            result1(5, 0), result1(8, 0);
         // get the scale
         // 计算尺度，根据公式(17)，t = t^ / three-party(||r1||*||r2||*||r3||)
-        double scale = 1.0 /
-                        std::pow(std::abs(tmp.col(0).norm() * tmp.col(1).norm() * tmp.col(2).norm()), 1.0 / 3.0);
+        double scale = 1.0 / std::pow(std::abs(tmp.col(0).norm() * tmp.col(1).norm() * tmp.col(2).norm()), 1.0 / 3.0);
 
         // double scale = 1.0 / std::sqrt(std::abs(tmp.col(0).norm() * tmp.col(1).norm()));
         //  find best rotation matrix in frobenius sense
@@ -901,8 +851,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
 
         // test if we found a good rotation matrix
         // 如果估计出来的旋转矩阵的行列式小于0，则乘以-1
-        if (Rout.determinant() < 0)
-            Rout *= -1.0;
+        if (Rout.determinant() < 0) Rout *= -1.0;
 
         // scale translation
         // 从相机坐标系到世界坐标系的转换关系是 lambda*v = R*pi+t
@@ -917,8 +866,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
         // 利用前6个点计算重投影误差，选择残差最小的一个解
         vector<double> error(2);
         vector<Eigen::Matrix4d, Eigen::aligned_allocator<Eigen::Matrix4d>> Ts(2);
-        for (int s = 0; s < 2; ++s)
-        {
+        for (int s = 0; s < 2; ++s) {
             // 初始化error的值为0
             error[s] = 0.0;
 
@@ -953,8 +901,7 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
             // Eigen中aliasing指的是在赋值表达式的左右两边存在矩阵的重叠区域，这种情况下，有可能得到非预期的结果。
             // 如mat = 2*mat或者mat = mat.transpose()，第一个例子中的alias是没有问题的，而第二的例子则会导致非预期的计算结果。
             Ts[s] = Ts[s].inverse().eval();
-            for (int p = 0; p < 6; ++p)
-            {
+            for (int p = 0; p < 6; ++p) {
                 // 从世界坐标系到相机坐标系的转换关系是 pi = R^T*v-R^Tt
                 // Ts[s].block<3, 3>(0, 0) * points3v[p] =  Rout   = R^T*v
                 // Ts[s].block<3, 1>(0, 3)               =  tout   = -R^Tt
@@ -1002,8 +949,8 @@ void MLPnPsolver::computePose(const bearingVectors_t &f, const points_t &p, cons
 
     // result inverse as opengv uses this convention
     // 这里是用来计算世界坐标系到相机坐标系的转换，所以是Pc=R^T*Pw-R^T*t，反变换
-    result.block<3, 3>(0, 0) = Rout; // Rout.transpose();
-    result.block<3, 1>(0, 3) = tout; //-result.block<3, 3>(0, 0) * tout;
+    result.block<3, 3>(0, 0) = Rout;  // Rout.transpose();
+    result.block<3, 1>(0, 3) = tout;  //-result.block<3, 3>(0, 0) * tout;
 }
 
 /**
@@ -1018,9 +965,7 @@ Eigen::Matrix3d MLPnPsolver::rodrigues2rot(const Eigen::Vector3d &omega)
 
     // 求旋转向量的反对称矩阵
     Eigen::Matrix3d skewW;
-    skewW << 0.0, -omega(2), omega(1),
-        omega(2), 0.0, -omega(0),
-        -omega(1), omega(0), 0.0;
+    skewW << 0.0, -omega(2), omega(1), omega(2), 0.0, -omega(0), -omega(1), omega(0), 0.0;
 
     // 求旋转向量的角度
     double omega_norm = omega.norm();
@@ -1058,8 +1003,7 @@ Eigen::Vector3d MLPnPsolver::rot2rodrigues(const Eigen::Matrix3d &R)
     double wnorm = acos(trace / 2.0);
 
     // 如果wnorm大于运行编译程序的计算机所能识别的最小非零浮点数，则可以生成向量，否则为0
-    if (wnorm > std::numeric_limits<double>::epsilon())
-    {
+    if (wnorm > std::numeric_limits<double>::epsilon()) {
         //        |r11 r21 r31|
         //   R  = |r12 r22 r32|
         //        |r13 r23 r33|
@@ -1084,7 +1028,7 @@ Eigen::Vector3d MLPnPsolver::rot2rodrigues(const Eigen::Matrix3d &R)
  * @param[in]  use_cov          协方差方法使用标记位
  */
 void MLPnPsolver::mlpnp_gn(Eigen::VectorXd &x, const points_t &pts, const std::vector<Eigen::MatrixXd> &nullspaces,
-                            const Eigen::SparseMatrix<double> Kll, bool use_cov)
+                           const Eigen::SparseMatrix<double> Kll, bool use_cov)
 {
     // 计算观测值数量
     const int numObservations = pts.size();
@@ -1104,7 +1048,7 @@ void MLPnPsolver::mlpnp_gn(Eigen::VectorXd &x, const points_t &pts, const std::v
     Eigen::VectorXd rd(2 * numObservations);
     Eigen::MatrixXd Jac(2 * numObservations, numUnknowns);
     Eigen::VectorXd g(numUnknowns, 1);
-    Eigen::VectorXd dx(numUnknowns, 1); // result vector
+    Eigen::VectorXd dx(numUnknowns, 1);  // result vector
 
     Jac.setZero();
     r.setZero();
@@ -1119,11 +1063,8 @@ void MLPnPsolver::mlpnp_gn(Eigen::VectorXd &x, const points_t &pts, const std::v
     Eigen::MatrixXd JacTSKll;
     Eigen::MatrixXd A;
     // solve simple gradient descent
-    while (it_cnt < maxIt && !stop)
-    {
-        mlpnp_residuals_and_jacs(x, pts,
-                                    nullspaces,
-                                    r, Jac, true);
+    while (it_cnt < maxIt && !stop) {
+        mlpnp_residuals_and_jacs(x, pts, nullspaces, r, Jac, true);
 
         if (use_cov)
             JacTSKll = Jac.transpose() * Kll;
@@ -1141,21 +1082,18 @@ void MLPnPsolver::mlpnp_gn(Eigen::VectorXd &x, const points_t &pts, const std::v
         // dx = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(g);
         //  this is to prevent the solution from falling into a wrong minimum
         //  if the linear estimate is spurious
-        if (dx.array().abs().maxCoeff() > 5.0 || dx.array().abs().minCoeff() > 1.0)
-            break;
+        if (dx.array().abs().maxCoeff() > 5.0 || dx.array().abs().minCoeff() > 1.0) break;
         // observation update
         Eigen::MatrixXd dl = Jac * dx;
-        if (dl.array().abs().maxCoeff() < epsP)
-        {
+        if (dl.array().abs().maxCoeff() < epsP) {
             stop = true;
             x = x - dx;
             break;
-        }
-        else
+        } else
             x = x - dx;
 
         ++it_cnt;
-    } // while
+    }  // while
     // result
 }
 
@@ -1169,8 +1107,8 @@ void MLPnPsolver::mlpnp_gn(Eigen::VectorXd &x, const points_t &pts, const std::v
  * @param[in]  getJacs          是否可以得到Jacobian矩阵标记位
  */
 void MLPnPsolver::mlpnp_residuals_and_jacs(const Eigen::VectorXd &x, const points_t &pts,
-                                            const std::vector<Eigen::MatrixXd> &nullspaces, Eigen::VectorXd &r,
-                                            Eigen::MatrixXd &fjac, bool getJacs)
+                                           const std::vector<Eigen::MatrixXd> &nullspaces, Eigen::VectorXd &r,
+                                           Eigen::MatrixXd &fjac, bool getJacs)
 {
     rodrigues_t w(x[0], x[1], x[2]);
     translation_t T(x[3], x[4], x[5]);
@@ -1181,20 +1119,15 @@ void MLPnPsolver::mlpnp_residuals_and_jacs(const Eigen::VectorXd &x, const point
 
     Eigen::MatrixXd jacs(2, 6);
 
-    for (int i = 0; i < pts.size(); ++i)
-    {
+    for (int i = 0; i < pts.size(); ++i) {
         Eigen::Vector3d ptCam = R * pts[i] + T;
         ptCam /= ptCam.norm();
 
         r[ii] = nullspaces[i].col(0).transpose() * ptCam;
         r[ii + 1] = nullspaces[i].col(1).transpose() * ptCam;
-        if (getJacs)
-        {
+        if (getJacs) {
             // jacs
-            mlpnpJacs(pts[i],
-                        nullspaces[i].col(0), nullspaces[i].col(1),
-                        w, T,
-                        jacs);
+            mlpnpJacs(pts[i], nullspaces[i].col(0), nullspaces[i].col(1), w, T, jacs);
 
             // r
             fjac(ii, 0) = jacs(0, 0);
@@ -1226,9 +1159,8 @@ void MLPnPsolver::mlpnp_residuals_and_jacs(const Eigen::VectorXd &x, const point
  * @param[in]  t                平移向量t
  * @param[out] jacs             Jacobian矩阵
  */
-void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_r,
-                            const Eigen::Vector3d &nullspace_s, const rodrigues_t &w,
-                            const translation_t &t, Eigen::MatrixXd &jacs)
+void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_r, const Eigen::Vector3d &nullspace_s,
+                            const rodrigues_t &w, const translation_t &t, Eigen::MatrixXd &jacs)
 {
     double r1 = nullspace_r[0];
     double r2 = nullspace_r[1];
@@ -1485,13 +1417,13 @@ void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_
     //     + (r3 * t3 * w2^2) + (r3 * t3 * w3^2) + (X1 * r1 * w1^2) + (X1 * r2 * w1 * w2) + (X1 * r3 * w1 * w3)
     //     + (Y1 * r1 * w1 * w2) + (Y1 * r3 * w2 * w3) + (Z1 * r1 * w1 * w3) + (Z1 * r2 * w2 * w3) + (X1 * r1 * w2^2 * cos(theta))
     //     + (X1 * r1 * w3^2 * cos(theta)) + (Y1 * r2 * w1^2 * cos(theta)) + (Y1 * r2 * w3^2 * cos(theta)) + (Z1 * r3 * w1^2 * cos(theta)) + (Z1 * r3 * w2^2 * cos(theta))
-    //     + (X1 * r2 * theta * sin(theta) * w3) + (Y1 * r3 * theta * sin(theta) * w1) + (Z1 * r1 * theta * sin(theta) * w2) - (X1 * r3 * theta * sin(theta) * w2) - (Y1 * r1 * theta * sin(theta) * w3)
+    //     + (X1 * r2 * theta * sin(theta) * w3) + (Y1 * r3 * theta * sin(theta) * w1) + (Z1 * r1 * theta * sin(theta) *
+    //     w2) - (X1 * r3 * theta * sin(theta) * w2) - (Y1 * r1 * theta * sin(theta) * w3)
     //     - (Z1 * r2 * theta * sin(theta) * w1) - (X1 * r2 * cos(theta) * w1 * w2) - (X1 * r3 * cos(theta) * w1 * w3) - (Y1 * r1 * cos(theta) * w1 * w2) - ()
     //     - (Y1 * r3 * cos(theta) * w2 * w3) - (Z1 * r1 * cos(theta) * w1 * w3) - (Z1 * r2 * cos(theta) * w2 * w3)
-    double t93 =
-        t66 + t67 + t68 + t69 + t70 + t71 + t72 + t73 + t74 + t75 + t76 + t77 + t78 + t79 + t80 + t81 + t82 +
-        t83 + t84 + t85 + t86 + t87 + t88 + t89 + t90 + t91 + t92 - t102 - t103 - t104 - t105 - t106 - t107 -
-        t108 - t109 - t110;
+    double t93 = t66 + t67 + t68 + t69 + t70 + t71 + t72 + t73 + t74 + t75 + t76 + t77 + t78 + t79 + t80 + t81 + t82 +
+                 t83 + t84 + t85 + t86 + t87 + t88 + t89 + t90 + t91 + t92 - t102 - t103 - t104 - t105 - t106 - t107 -
+                 t108 - t109 - t110;
     // t94 = sin(theta)/theta^3* w1 * w2 = F*w1*w2
     double t94 = t10 * t25 * w1 * w2;
     // t95 = w2^2*sin(theta)/theta^3*w3 = F*w2^2*w3
@@ -1626,10 +1558,9 @@ void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_
     //        + (Y1 * s3 * t9 * t10 * w1) + (Z1 * s1 * t9 * t10 * w2) - (X1 * s3 * t9 * t10 * w2) - (Y1 * s1 * t9 * t10 * w3) - (Z1 * s2 * t9 * t10 * w1)
     //        - (X1 * s2 * t12 * w1 * w2) - (X1 * s3 * t12 * w1 * w3) - (Y1 * s1 * t12 * w1 * w2)
     //        - (Y1 * s3 * t12 * w2 * w3) - (Z1 * s1 * t12 * w1 * w3) - (Z1 * s2 * t12 * w2 * w3)
-    double t167 =
-        t140 + t141 + t142 + t143 + t144 + t145 + t146 + t147 + t148 + t149 + t150 + t151 + t152 + t153 + t154 +
-        t155 + t156 + t157 + t158 + t159 + t160 + t161 + t162 + t163 + t164 + t165 + t166 - t183 - t184 - t185 -
-        t186 - t187 - t188 - t189 - t190 - t191;
+    double t167 = t140 + t141 + t142 + t143 + t144 + t145 + t146 + t147 + t148 + t149 + t150 + t151 + t152 + t153 +
+                  t154 + t155 + t156 + t157 + t158 + t159 + t160 + t161 + t162 + t163 + t164 + t165 + t166 - t183 -
+                  t184 - t185 - t186 - t187 - t188 - t189 - t190 - t191;
     // t168 = t13 * t26 * t45 * w2 * 2.0 = 2*G*w2*(w1^2+w3^2)
     double t168 = t13 * t26 * t45 * w2 * 2.0;
     // t169 = t10 * t25 * t45 * w2 = F*w2*(w1^2+w3^2)
@@ -1709,12 +1640,77 @@ void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_
     double t216 = t213 + t214 + t215 - X1 * t38 * 2.0;
 
     //
-    jacs(0, 0) = t14 * t65 * (X1 * r1 * w1 * 2.0 + X1 * r2 * w2 + X1 * r3 * w3 + Y1 * r1 * w2 + Z1 * r1 * w3 + r1 * t1 * w1 * 2.0 + r2 * t2 * w1 * 2.0 + r3 * t3 * w1 * 2.0 + Y1 * r3 * t5 * t12 + Y1 * r3 * t9 * t10 - Z1 * r2 * t5 * t12 - Z1 * r2 * t9 * t10 - X1 * r2 * t12 * w2 - X1 * r3 * t12 * w3 - Y1 * r1 * t12 * w2 + Y1 * r2 * t12 * w1 * 2.0 - Z1 * r1 * t12 * w3 + Z1 * r3 * t12 * w1 * 2.0 + Y1 * r3 * t5 * t10 * t11 - Z1 * r2 * t5 * t10 * t11 + X1 * r2 * t12 * w1 * w3 - X1 * r3 * t12 * w1 * w2 - Y1 * r1 * t12 * w1 * w3 + Z1 * r1 * t12 * w1 * w2 - Y1 * r1 * t10 * t11 * w1 * w3 + Z1 * r1 * t10 * t11 * w1 * w2 - X1 * r1 * t6 * t10 * t11 * w1 - X1 * r1 * t7 * t10 * t11 * w1 + X1 * r2 * t5 * t10 * t11 * w2 + X1 * r3 * t5 * t10 * t11 * w3 + Y1 * r1 * t5 * t10 * t11 * w2 - Y1 * r2 * t5 * t10 * t11 * w1 - Y1 * r2 * t7 * t10 * t11 * w1 + Z1 * r1 * t5 * t10 * t11 * w3 - Z1 * r3 * t5 * t10 * t11 * w1 - Z1 * r3 * t6 * t10 * t11 * w1 + X1 * r2 * t10 * t11 * w1 * w3 - X1 * r3 * t10 * t11 * w1 * w2 + Y1 * r3 * t10 * t11 * w1 * w2 * w3 + Z1 * r2 * t10 * t11 * w1 * w2 * w3) - t26 * t65 * t93 * w1 * 2.0 - t14 * t93 * t101 * (t130 + t15 * (-X1 * t121 + Y1 * (t46 + t47 + t48 - t13 * t14 * w2 - t12 * t14 * w1 * w3) + Z1 * (t35 + t36 + t37 - t13 * t14 * w3 - t10 * t25 * w1 * w2)) * 2.0 + t18 * (t135 + t137 - Y1 * (t132 + t133 - t13 * t14 * w1 * 2.0)) * 2.0) * (1.0 / 2.0);
+    jacs(0, 0) =
+        t14 * t65 *
+            (X1 * r1 * w1 * 2.0 + X1 * r2 * w2 + X1 * r3 * w3 + Y1 * r1 * w2 + Z1 * r1 * w3 + r1 * t1 * w1 * 2.0 +
+             r2 * t2 * w1 * 2.0 + r3 * t3 * w1 * 2.0 + Y1 * r3 * t5 * t12 + Y1 * r3 * t9 * t10 - Z1 * r2 * t5 * t12 -
+             Z1 * r2 * t9 * t10 - X1 * r2 * t12 * w2 - X1 * r3 * t12 * w3 - Y1 * r1 * t12 * w2 +
+             Y1 * r2 * t12 * w1 * 2.0 - Z1 * r1 * t12 * w3 + Z1 * r3 * t12 * w1 * 2.0 + Y1 * r3 * t5 * t10 * t11 -
+             Z1 * r2 * t5 * t10 * t11 + X1 * r2 * t12 * w1 * w3 - X1 * r3 * t12 * w1 * w2 - Y1 * r1 * t12 * w1 * w3 +
+             Z1 * r1 * t12 * w1 * w2 - Y1 * r1 * t10 * t11 * w1 * w3 + Z1 * r1 * t10 * t11 * w1 * w2 -
+             X1 * r1 * t6 * t10 * t11 * w1 - X1 * r1 * t7 * t10 * t11 * w1 + X1 * r2 * t5 * t10 * t11 * w2 +
+             X1 * r3 * t5 * t10 * t11 * w3 + Y1 * r1 * t5 * t10 * t11 * w2 - Y1 * r2 * t5 * t10 * t11 * w1 -
+             Y1 * r2 * t7 * t10 * t11 * w1 + Z1 * r1 * t5 * t10 * t11 * w3 - Z1 * r3 * t5 * t10 * t11 * w1 -
+             Z1 * r3 * t6 * t10 * t11 * w1 + X1 * r2 * t10 * t11 * w1 * w3 - X1 * r3 * t10 * t11 * w1 * w2 +
+             Y1 * r3 * t10 * t11 * w1 * w2 * w3 + Z1 * r2 * t10 * t11 * w1 * w2 * w3) -
+        t26 * t65 * t93 * w1 * 2.0 -
+        t14 * t93 * t101 *
+            (t130 +
+             t15 *
+                 (-X1 * t121 + Y1 * (t46 + t47 + t48 - t13 * t14 * w2 - t12 * t14 * w1 * w3) +
+                  Z1 * (t35 + t36 + t37 - t13 * t14 * w3 - t10 * t25 * w1 * w2)) *
+                 2.0 +
+             t18 * (t135 + t137 - Y1 * (t132 + t133 - t13 * t14 * w1 * 2.0)) * 2.0) *
+            (1.0 / 2.0);
 
-    jacs(0, 1) = t14 * t65 * (X1 * r2 * w1 + Y1 * r1 * w1 + Y1 * r2 * w2 * 2.0 + Y1 * r3 * w3 + Z1 * r2 * w3 + r1 * t1 * w2 * 2.0 + r2 * t2 * w2 * 2.0 + r3 * t3 * w2 * 2.0 - X1 * r3 * t6 * t12 - X1 * r3 * t9 * t10 + Z1 * r1 * t6 * t12 + Z1 * r1 * t9 * t10 + X1 * r1 * t12 * w2 * 2.0 - X1 * r2 * t12 * w1 - Y1 * r1 * t12 * w1 - Y1 * r3 * t12 * w3 - Z1 * r2 * t12 * w3 + Z1 * r3 * t12 * w2 * 2.0 - X1 * r3 * t6 * t10 * t11 + Z1 * r1 * t6 * t10 * t11 + X1 * r2 * t12 * w2 * w3 - Y1 * r1 * t12 * w2 * w3 + Y1 * r3 * t12 * w1 * w2 - Z1 * r2 * t12 * w1 * w2 - Y1 * r1 * t10 * t11 * w2 * w3 + Y1 * r3 * t10 * t11 * w1 * w2 - Z1 * r2 * t10 * t11 * w1 * w2 - X1 * r1 * t6 * t10 * t11 * w2 + X1 * r2 * t6 * t10 * t11 * w1 - X1 * r1 * t7 * t10 * t11 * w2 + Y1 * r1 * t6 * t10 * t11 * w1 - Y1 * r2 * t5 * t10 * t11 * w2 - Y1 * r2 * t7 * t10 * t11 * w2 + Y1 * r3 * t6 * t10 * t11 * w3 - Z1 * r3 * t5 * t10 * t11 * w2 + Z1 * r2 * t6 * t10 * t11 * w3 - Z1 * r3 * t6 * t10 * t11 * w2 + X1 * r2 * t10 * t11 * w2 * w3 + X1 * r3 * t10 * t11 * w1 * w2 * w3 + Z1 * r1 * t10 * t11 * w1 * w2 * w3) -
-                    t26 * t65 * t93 * w2 * 2.0 - t14 * t93 * t101 * (t18 * (Z1 * (-t35 + t94 + t95 + t96 - t13 * t14 * w3) - Y1 * t170 + X1 * (t97 + t98 + t99 - t13 * t14 * w1 - t10 * t25 * w2 * w3)) * 2.0 + t15 * (t180 + t182 - X1 * (t177 + t178 - t13 * t14 * w2 * 2.0)) * 2.0 + t23 * (t175 + Y1 * (t35 - t94 + t95 + t96 - t13 * t14 * w3) - Z1 * t173) * 2.0) * (1.0 / 2.0);
-    jacs(0, 2) = t14 * t65 * (X1 * r3 * w1 + Y1 * r3 * w2 + Z1 * r1 * w1 + Z1 * r2 * w2 + Z1 * r3 * w3 * 2.0 + r1 * t1 * w3 * 2.0 + r2 * t2 * w3 * 2.0 + r3 * t3 * w3 * 2.0 + X1 * r2 * t7 * t12 + X1 * r2 * t9 * t10 - Y1 * r1 * t7 * t12 - Y1 * r1 * t9 * t10 + X1 * r1 * t12 * w3 * 2.0 - X1 * r3 * t12 * w1 + Y1 * r2 * t12 * w3 * 2.0 - Y1 * r3 * t12 * w2 - Z1 * r1 * t12 * w1 - Z1 * r2 * t12 * w2 + X1 * r2 * t7 * t10 * t11 - Y1 * r1 * t7 * t10 * t11 - X1 * r3 * t12 * w2 * w3 + Y1 * r3 * t12 * w1 * w3 + Z1 * r1 * t12 * w2 * w3 - Z1 * r2 * t12 * w1 * w3 + Y1 * r3 * t10 * t11 * w1 * w3 + Z1 * r1 * t10 * t11 * w2 * w3 - Z1 * r2 * t10 * t11 * w1 * w3 - X1 * r1 * t6 * t10 * t11 * w3 - X1 * r1 * t7 * t10 * t11 * w3 + X1 * r3 * t7 * t10 * t11 * w1 - Y1 * r2 * t5 * t10 * t11 * w3 - Y1 * r2 * t7 * t10 * t11 * w3 + Y1 * r3 * t7 * t10 * t11 * w2 + Z1 * r1 * t7 * t10 * t11 * w1 + Z1 * r2 * t7 * t10 * t11 * w2 - Z1 * r3 * t5 * t10 * t11 * w3 - Z1 * r3 * t6 * t10 * t11 * w3 - X1 * r3 * t10 * t11 * w2 * w3 + X1 * r2 * t10 * t11 * w1 * w2 * w3 + Y1 * r1 * t10 * t11 * w1 * w2 * w3) -
-                    t26 * t65 * t93 * w3 * 2.0 - t14 * t93 * t101 * (t18 * (Z1 * (t46 - t113 + t114 + t115 - t13 * t14 * w2) - Y1 * t198 + X1 * (t49 + t51 + t52 + t118 - t7 * t10 * t25)) * 2.0 + t23 * (X1 * (-t97 + t112 + t116 + t117 - t13 * t14 * w1) + Y1 * (-t46 + t113 + t114 + t115 - t13 * t14 * w2) - Z1 * t195) * 2.0 + t15 * (t204 + Z1 * (t97 - t112 + t116 + t117 - t13 * t14 * w1) - X1 * (t201 + t202 - t13 * t14 * w3 * 2.0)) * 2.0) * (1.0 / 2.0);
+    jacs(0, 1) =
+        t14 * t65 *
+            (X1 * r2 * w1 + Y1 * r1 * w1 + Y1 * r2 * w2 * 2.0 + Y1 * r3 * w3 + Z1 * r2 * w3 + r1 * t1 * w2 * 2.0 +
+             r2 * t2 * w2 * 2.0 + r3 * t3 * w2 * 2.0 - X1 * r3 * t6 * t12 - X1 * r3 * t9 * t10 + Z1 * r1 * t6 * t12 +
+             Z1 * r1 * t9 * t10 + X1 * r1 * t12 * w2 * 2.0 - X1 * r2 * t12 * w1 - Y1 * r1 * t12 * w1 -
+             Y1 * r3 * t12 * w3 - Z1 * r2 * t12 * w3 + Z1 * r3 * t12 * w2 * 2.0 - X1 * r3 * t6 * t10 * t11 +
+             Z1 * r1 * t6 * t10 * t11 + X1 * r2 * t12 * w2 * w3 - Y1 * r1 * t12 * w2 * w3 + Y1 * r3 * t12 * w1 * w2 -
+             Z1 * r2 * t12 * w1 * w2 - Y1 * r1 * t10 * t11 * w2 * w3 + Y1 * r3 * t10 * t11 * w1 * w2 -
+             Z1 * r2 * t10 * t11 * w1 * w2 - X1 * r1 * t6 * t10 * t11 * w2 + X1 * r2 * t6 * t10 * t11 * w1 -
+             X1 * r1 * t7 * t10 * t11 * w2 + Y1 * r1 * t6 * t10 * t11 * w1 - Y1 * r2 * t5 * t10 * t11 * w2 -
+             Y1 * r2 * t7 * t10 * t11 * w2 + Y1 * r3 * t6 * t10 * t11 * w3 - Z1 * r3 * t5 * t10 * t11 * w2 +
+             Z1 * r2 * t6 * t10 * t11 * w3 - Z1 * r3 * t6 * t10 * t11 * w2 + X1 * r2 * t10 * t11 * w2 * w3 +
+             X1 * r3 * t10 * t11 * w1 * w2 * w3 + Z1 * r1 * t10 * t11 * w1 * w2 * w3) -
+        t26 * t65 * t93 * w2 * 2.0 -
+        t14 * t93 * t101 *
+            (t18 *
+                 (Z1 * (-t35 + t94 + t95 + t96 - t13 * t14 * w3) - Y1 * t170 +
+                  X1 * (t97 + t98 + t99 - t13 * t14 * w1 - t10 * t25 * w2 * w3)) *
+                 2.0 +
+             t15 * (t180 + t182 - X1 * (t177 + t178 - t13 * t14 * w2 * 2.0)) * 2.0 +
+             t23 * (t175 + Y1 * (t35 - t94 + t95 + t96 - t13 * t14 * w3) - Z1 * t173) * 2.0) *
+            (1.0 / 2.0);
+    jacs(0, 2) =
+        t14 * t65 *
+            (X1 * r3 * w1 + Y1 * r3 * w2 + Z1 * r1 * w1 + Z1 * r2 * w2 + Z1 * r3 * w3 * 2.0 + r1 * t1 * w3 * 2.0 +
+             r2 * t2 * w3 * 2.0 + r3 * t3 * w3 * 2.0 + X1 * r2 * t7 * t12 + X1 * r2 * t9 * t10 - Y1 * r1 * t7 * t12 -
+             Y1 * r1 * t9 * t10 + X1 * r1 * t12 * w3 * 2.0 - X1 * r3 * t12 * w1 + Y1 * r2 * t12 * w3 * 2.0 -
+             Y1 * r3 * t12 * w2 - Z1 * r1 * t12 * w1 - Z1 * r2 * t12 * w2 + X1 * r2 * t7 * t10 * t11 -
+             Y1 * r1 * t7 * t10 * t11 - X1 * r3 * t12 * w2 * w3 + Y1 * r3 * t12 * w1 * w3 + Z1 * r1 * t12 * w2 * w3 -
+             Z1 * r2 * t12 * w1 * w3 + Y1 * r3 * t10 * t11 * w1 * w3 + Z1 * r1 * t10 * t11 * w2 * w3 -
+             Z1 * r2 * t10 * t11 * w1 * w3 - X1 * r1 * t6 * t10 * t11 * w3 - X1 * r1 * t7 * t10 * t11 * w3 +
+             X1 * r3 * t7 * t10 * t11 * w1 - Y1 * r2 * t5 * t10 * t11 * w3 - Y1 * r2 * t7 * t10 * t11 * w3 +
+             Y1 * r3 * t7 * t10 * t11 * w2 + Z1 * r1 * t7 * t10 * t11 * w1 + Z1 * r2 * t7 * t10 * t11 * w2 -
+             Z1 * r3 * t5 * t10 * t11 * w3 - Z1 * r3 * t6 * t10 * t11 * w3 - X1 * r3 * t10 * t11 * w2 * w3 +
+             X1 * r2 * t10 * t11 * w1 * w2 * w3 + Y1 * r1 * t10 * t11 * w1 * w2 * w3) -
+        t26 * t65 * t93 * w3 * 2.0 -
+        t14 * t93 * t101 *
+            (t18 *
+                 (Z1 * (t46 - t113 + t114 + t115 - t13 * t14 * w2) - Y1 * t198 +
+                  X1 * (t49 + t51 + t52 + t118 - t7 * t10 * t25)) *
+                 2.0 +
+             t23 *
+                 (X1 * (-t97 + t112 + t116 + t117 - t13 * t14 * w1) +
+                  Y1 * (-t46 + t113 + t114 + t115 - t13 * t14 * w2) - Z1 * t195) *
+                 2.0 +
+             t15 * (t204 + Z1 * (t97 - t112 + t116 + t117 - t13 * t14 * w1) - X1 * (t201 + t202 - t13 * t14 * w3 * 2.0)) *
+                 2.0) *
+            (1.0 / 2.0);
 
     // = 1/2 * r1 * t65
     //   - t14 * t93
@@ -1725,7 +1721,8 @@ void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_
     //             + (r3 * t3 * w2^2) + (r3 * t3 * w3^2) + (X1 * r1 * w1^2) + (X1 * r2 * w1 * w2) + (X1 * r3 * w1 * w3)
     //             + (Y1 * r1 * w1 * w2) + (Y1 * r3 * w2 * w3) + (Z1 * r1 * w1 * w3) + (Z1 * r2 * w2 * w3) + (X1 * r1 * w2^2 * cos(theta))
     //             + (X1 * r1 * w3^2 * cos(theta)) + (Y1 * r2 * w1^2 * cos(theta)) + (Y1 * r2 * w3^2 * cos(theta)) + (Z1 * r3 * w1^2 * cos(theta)) + (Z1 * r3 * w2^2 * cos(theta))
-    //             + (X1 * r2 * theta * sin(theta) * w3) + (Y1 * r3 * theta * sin(theta) * w1) + (Z1 * r1 * theta * sin(theta) * w2) - (X1 * r3 * theta * sin(theta) * w2) - (Y1 * r1 * theta * sin(theta) * w3)
+    //             + (X1 * r2 * theta * sin(theta) * w3) + (Y1 * r3 * theta * sin(theta) * w1) + (Z1 * r1 * theta * sin(theta)
+    //             * w2) - (X1 * r3 * theta * sin(theta) * w2) - (Y1 * r1 * theta * sin(theta) * w3)
     //             - (Z1 * r2 * theta * sin(theta) * w1) - (X1 * r2 * cos(theta) * w1 * w2) - (X1 * r3 * cos(theta) * w1 * w3) - (Y1 * r1 * cos(theta) * w1 * w2) - ()
     //             - (Y1 * r3 * cos(theta) * w2 * w3) - (Z1 * r1 * cos(theta) * w1 * w3) - (Z1 * r2 * cos(theta) * w2 * w3))
     //      * (pow(((t1 + r11*X1 + r12*Y1 + r13*Z1)^2 + (t2 + r21*X1 + r22*Y1 + r23*Z1)^2 + (t3 + r31*X1 + r32*Y1 + r33*Z1)^2), 3/2))
@@ -1733,13 +1730,64 @@ void MLPnPsolver::mlpnpJacs(const point_t &pt, const Eigen::Vector3d &nullspace_
     jacs(0, 3) = r1 * t65 - t14 * t93 * t101 * t208 * (1.0 / 2.0);
     jacs(0, 4) = r2 * t65 - t14 * t93 * t101 * t212 * (1.0 / 2.0);
     jacs(0, 5) = r3 * t65 - t14 * t93 * t101 * t216 * (1.0 / 2.0);
-    jacs(1, 0) = t14 * t65 * (X1 * s1 * w1 * 2.0 + X1 * s2 * w2 + X1 * s3 * w3 + Y1 * s1 * w2 + Z1 * s1 * w3 + s1 * t1 * w1 * 2.0 + s2 * t2 * w1 * 2.0 + s3 * t3 * w1 * 2.0 + Y1 * s3 * t5 * t12 + Y1 * s3 * t9 * t10 - Z1 * s2 * t5 * t12 - Z1 * s2 * t9 * t10 - X1 * s2 * t12 * w2 - X1 * s3 * t12 * w3 - Y1 * s1 * t12 * w2 + Y1 * s2 * t12 * w1 * 2.0 - Z1 * s1 * t12 * w3 + Z1 * s3 * t12 * w1 * 2.0 + Y1 * s3 * t5 * t10 * t11 - Z1 * s2 * t5 * t10 * t11 + X1 * s2 * t12 * w1 * w3 - X1 * s3 * t12 * w1 * w2 - Y1 * s1 * t12 * w1 * w3 + Z1 * s1 * t12 * w1 * w2 + X1 * s2 * t10 * t11 * w1 * w3 - X1 * s3 * t10 * t11 * w1 * w2 - Y1 * s1 * t10 * t11 * w1 * w3 + Z1 * s1 * t10 * t11 * w1 * w2 - X1 * s1 * t6 * t10 * t11 * w1 - X1 * s1 * t7 * t10 * t11 * w1 + X1 * s2 * t5 * t10 * t11 * w2 + X1 * s3 * t5 * t10 * t11 * w3 + Y1 * s1 * t5 * t10 * t11 * w2 - Y1 * s2 * t5 * t10 * t11 * w1 - Y1 * s2 * t7 * t10 * t11 * w1 + Z1 * s1 * t5 * t10 * t11 * w3 - Z1 * s3 * t5 * t10 * t11 * w1 - Z1 * s3 * t6 * t10 * t11 * w1 + Y1 * s3 * t10 * t11 * w1 * w2 * w3 + Z1 * s2 * t10 * t11 * w1 * w2 * w3) - t14 * t101 * t167 * (t130 + t15 * (Y1 * (t46 + t47 + t48 - t113 - t138) + Z1 * (t35 + t36 + t37 - t94 - t139) - X1 * t121) * 2.0 + t18 * (t135 + t137 - Y1 * (-t131 + t132 + t133)) * 2.0) * (1.0 / 2.0) - t26 * t65 * t167 * w1 * 2.0;
-    jacs(1, 1) = t14 * t65 * (X1 * s2 * w1 + Y1 * s1 * w1 + Y1 * s2 * w2 * 2.0 + Y1 * s3 * w3 + Z1 * s2 * w3 + s1 * t1 * w2 * 2.0 + s2 * t2 * w2 * 2.0 + s3 * t3 * w2 * 2.0 - X1 * s3 * t6 * t12 - X1 * s3 * t9 * t10 + Z1 * s1 * t6 * t12 + Z1 * s1 * t9 * t10 + X1 * s1 * t12 * w2 * 2.0 - X1 * s2 * t12 * w1 - Y1 * s1 * t12 * w1 - Y1 * s3 * t12 * w3 - Z1 * s2 * t12 * w3 + Z1 * s3 * t12 * w2 * 2.0 - X1 * s3 * t6 * t10 * t11 + Z1 * s1 * t6 * t10 * t11 + X1 * s2 * t12 * w2 * w3 - Y1 * s1 * t12 * w2 * w3 + Y1 * s3 * t12 * w1 * w2 - Z1 * s2 * t12 * w1 * w2 + X1 * s2 * t10 * t11 * w2 * w3 - Y1 * s1 * t10 * t11 * w2 * w3 + Y1 * s3 * t10 * t11 * w1 * w2 - Z1 * s2 * t10 * t11 * w1 * w2 - X1 * s1 * t6 * t10 * t11 * w2 + X1 * s2 * t6 * t10 * t11 * w1 - X1 * s1 * t7 * t10 * t11 * w2 + Y1 * s1 * t6 * t10 * t11 * w1 - Y1 * s2 * t5 * t10 * t11 * w2 - Y1 * s2 * t7 * t10 * t11 * w2 + Y1 * s3 * t6 * t10 * t11 * w3 - Z1 * s3 * t5 * t10 * t11 * w2 + Z1 * s2 * t6 * t10 * t11 * w3 - Z1 * s3 * t6 * t10 * t11 * w2 + X1 * s3 * t10 * t11 * w1 * w2 * w3 + Z1 * s1 * t10 * t11 * w1 * w2 * w3) -
-                    t26 * t65 * t167 * w2 * 2.0 - t14 * t101 * t167 * (t18 * (X1 * (t97 + t98 + t99 - t112 - t192) + Z1 * (-t35 + t94 + t95 + t96 - t139) - Y1 * t170) * 2.0 + t15 * (t180 + t182 - X1 * (-t176 + t177 + t178)) * 2.0 + t23 * (t175 + Y1 * (t35 - t94 + t95 + t96 - t139) - Z1 * t173) * 2.0) * (1.0 / 2.0);
-    jacs(1, 2) = t14 * t65 * (X1 * s3 * w1 + Y1 * s3 * w2 + Z1 * s1 * w1 + Z1 * s2 * w2 + Z1 * s3 * w3 * 2.0 + s1 * t1 * w3 * 2.0 + s2 * t2 * w3 * 2.0 + s3 * t3 * w3 * 2.0 + X1 * s2 * t7 * t12 + X1 * s2 * t9 * t10 - Y1 * s1 * t7 * t12 - Y1 * s1 * t9 * t10 + X1 * s1 * t12 * w3 * 2.0 - X1 * s3 * t12 * w1 + Y1 * s2 * t12 * w3 * 2.0 - Y1 * s3 * t12 * w2 - Z1 * s1 * t12 * w1 - Z1 * s2 * t12 * w2 + X1 * s2 * t7 * t10 * t11 - Y1 * s1 * t7 * t10 * t11 - X1 * s3 * t12 * w2 * w3 + Y1 * s3 * t12 * w1 * w3 + Z1 * s1 * t12 * w2 * w3 - Z1 * s2 * t12 * w1 * w3 - X1 * s3 * t10 * t11 * w2 * w3 + Y1 * s3 * t10 * t11 * w1 * w3 + Z1 * s1 * t10 * t11 * w2 * w3 - Z1 * s2 * t10 * t11 * w1 * w3 - X1 * s1 * t6 * t10 * t11 * w3 - X1 * s1 * t7 * t10 * t11 * w3 + X1 * s3 * t7 * t10 * t11 * w1 - Y1 * s2 * t5 * t10 * t11 * w3 - Y1 * s2 * t7 * t10 * t11 * w3 + Y1 * s3 * t7 * t10 * t11 * w2 + Z1 * s1 * t7 * t10 * t11 * w1 + Z1 * s2 * t7 * t10 * t11 * w2 - Z1 * s3 * t5 * t10 * t11 * w3 - Z1 * s3 * t6 * t10 * t11 * w3 + X1 * s2 * t10 * t11 * w1 * w2 * w3 + Y1 * s1 * t10 * t11 * w1 * w2 * w3) -
-                    t26 * t65 * t167 * w3 * 2.0 - t14 * t101 * t167 * (t18 * (Z1 * (t46 - t113 + t114 + t115 - t138) - Y1 * t198 + X1 * (t49 + t51 + t52 + t118 - t199)) * 2.0 + t23 * (X1 * (-t97 + t112 + t116 + t117 - t192) + Y1 * (-t46 + t113 + t114 + t115 - t138) - Z1 * t195) * 2.0 + t15 * (t204 + Z1 * (t97 - t112 + t116 + t117 - t192) - X1 * (-t200 + t201 + t202)) * 2.0) * (1.0 / 2.0);
+    jacs(1, 0) =
+        t14 * t65 *
+            (X1 * s1 * w1 * 2.0 + X1 * s2 * w2 + X1 * s3 * w3 + Y1 * s1 * w2 + Z1 * s1 * w3 + s1 * t1 * w1 * 2.0 +
+             s2 * t2 * w1 * 2.0 + s3 * t3 * w1 * 2.0 + Y1 * s3 * t5 * t12 + Y1 * s3 * t9 * t10 - Z1 * s2 * t5 * t12 -
+             Z1 * s2 * t9 * t10 - X1 * s2 * t12 * w2 - X1 * s3 * t12 * w3 - Y1 * s1 * t12 * w2 +
+             Y1 * s2 * t12 * w1 * 2.0 - Z1 * s1 * t12 * w3 + Z1 * s3 * t12 * w1 * 2.0 + Y1 * s3 * t5 * t10 * t11 -
+             Z1 * s2 * t5 * t10 * t11 + X1 * s2 * t12 * w1 * w3 - X1 * s3 * t12 * w1 * w2 - Y1 * s1 * t12 * w1 * w3 +
+             Z1 * s1 * t12 * w1 * w2 + X1 * s2 * t10 * t11 * w1 * w3 - X1 * s3 * t10 * t11 * w1 * w2 -
+             Y1 * s1 * t10 * t11 * w1 * w3 + Z1 * s1 * t10 * t11 * w1 * w2 - X1 * s1 * t6 * t10 * t11 * w1 -
+             X1 * s1 * t7 * t10 * t11 * w1 + X1 * s2 * t5 * t10 * t11 * w2 + X1 * s3 * t5 * t10 * t11 * w3 +
+             Y1 * s1 * t5 * t10 * t11 * w2 - Y1 * s2 * t5 * t10 * t11 * w1 - Y1 * s2 * t7 * t10 * t11 * w1 +
+             Z1 * s1 * t5 * t10 * t11 * w3 - Z1 * s3 * t5 * t10 * t11 * w1 - Z1 * s3 * t6 * t10 * t11 * w1 +
+             Y1 * s3 * t10 * t11 * w1 * w2 * w3 + Z1 * s2 * t10 * t11 * w1 * w2 * w3) -
+        t14 * t101 * t167 *
+            (t130 + t15 * (Y1 * (t46 + t47 + t48 - t113 - t138) + Z1 * (t35 + t36 + t37 - t94 - t139) - X1 * t121) * 2.0 +
+             t18 * (t135 + t137 - Y1 * (-t131 + t132 + t133)) * 2.0) *
+            (1.0 / 2.0) -
+        t26 * t65 * t167 * w1 * 2.0;
+    jacs(1, 1) =
+        t14 * t65 *
+            (X1 * s2 * w1 + Y1 * s1 * w1 + Y1 * s2 * w2 * 2.0 + Y1 * s3 * w3 + Z1 * s2 * w3 + s1 * t1 * w2 * 2.0 +
+             s2 * t2 * w2 * 2.0 + s3 * t3 * w2 * 2.0 - X1 * s3 * t6 * t12 - X1 * s3 * t9 * t10 + Z1 * s1 * t6 * t12 +
+             Z1 * s1 * t9 * t10 + X1 * s1 * t12 * w2 * 2.0 - X1 * s2 * t12 * w1 - Y1 * s1 * t12 * w1 -
+             Y1 * s3 * t12 * w3 - Z1 * s2 * t12 * w3 + Z1 * s3 * t12 * w2 * 2.0 - X1 * s3 * t6 * t10 * t11 +
+             Z1 * s1 * t6 * t10 * t11 + X1 * s2 * t12 * w2 * w3 - Y1 * s1 * t12 * w2 * w3 + Y1 * s3 * t12 * w1 * w2 -
+             Z1 * s2 * t12 * w1 * w2 + X1 * s2 * t10 * t11 * w2 * w3 - Y1 * s1 * t10 * t11 * w2 * w3 +
+             Y1 * s3 * t10 * t11 * w1 * w2 - Z1 * s2 * t10 * t11 * w1 * w2 - X1 * s1 * t6 * t10 * t11 * w2 +
+             X1 * s2 * t6 * t10 * t11 * w1 - X1 * s1 * t7 * t10 * t11 * w2 + Y1 * s1 * t6 * t10 * t11 * w1 -
+             Y1 * s2 * t5 * t10 * t11 * w2 - Y1 * s2 * t7 * t10 * t11 * w2 + Y1 * s3 * t6 * t10 * t11 * w3 -
+             Z1 * s3 * t5 * t10 * t11 * w2 + Z1 * s2 * t6 * t10 * t11 * w3 - Z1 * s3 * t6 * t10 * t11 * w2 +
+             X1 * s3 * t10 * t11 * w1 * w2 * w3 + Z1 * s1 * t10 * t11 * w1 * w2 * w3) -
+        t26 * t65 * t167 * w2 * 2.0 -
+        t14 * t101 * t167 *
+            (t18 * (X1 * (t97 + t98 + t99 - t112 - t192) + Z1 * (-t35 + t94 + t95 + t96 - t139) - Y1 * t170) * 2.0 +
+             t15 * (t180 + t182 - X1 * (-t176 + t177 + t178)) * 2.0 +
+             t23 * (t175 + Y1 * (t35 - t94 + t95 + t96 - t139) - Z1 * t173) * 2.0) *
+            (1.0 / 2.0);
+    jacs(1, 2) =
+        t14 * t65 *
+            (X1 * s3 * w1 + Y1 * s3 * w2 + Z1 * s1 * w1 + Z1 * s2 * w2 + Z1 * s3 * w3 * 2.0 + s1 * t1 * w3 * 2.0 +
+             s2 * t2 * w3 * 2.0 + s3 * t3 * w3 * 2.0 + X1 * s2 * t7 * t12 + X1 * s2 * t9 * t10 - Y1 * s1 * t7 * t12 -
+             Y1 * s1 * t9 * t10 + X1 * s1 * t12 * w3 * 2.0 - X1 * s3 * t12 * w1 + Y1 * s2 * t12 * w3 * 2.0 -
+             Y1 * s3 * t12 * w2 - Z1 * s1 * t12 * w1 - Z1 * s2 * t12 * w2 + X1 * s2 * t7 * t10 * t11 -
+             Y1 * s1 * t7 * t10 * t11 - X1 * s3 * t12 * w2 * w3 + Y1 * s3 * t12 * w1 * w3 + Z1 * s1 * t12 * w2 * w3 -
+             Z1 * s2 * t12 * w1 * w3 - X1 * s3 * t10 * t11 * w2 * w3 + Y1 * s3 * t10 * t11 * w1 * w3 +
+             Z1 * s1 * t10 * t11 * w2 * w3 - Z1 * s2 * t10 * t11 * w1 * w3 - X1 * s1 * t6 * t10 * t11 * w3 -
+             X1 * s1 * t7 * t10 * t11 * w3 + X1 * s3 * t7 * t10 * t11 * w1 - Y1 * s2 * t5 * t10 * t11 * w3 -
+             Y1 * s2 * t7 * t10 * t11 * w3 + Y1 * s3 * t7 * t10 * t11 * w2 + Z1 * s1 * t7 * t10 * t11 * w1 +
+             Z1 * s2 * t7 * t10 * t11 * w2 - Z1 * s3 * t5 * t10 * t11 * w3 - Z1 * s3 * t6 * t10 * t11 * w3 +
+             X1 * s2 * t10 * t11 * w1 * w2 * w3 + Y1 * s1 * t10 * t11 * w1 * w2 * w3) -
+        t26 * t65 * t167 * w3 * 2.0 -
+        t14 * t101 * t167 *
+            (t18 * (Z1 * (t46 - t113 + t114 + t115 - t138) - Y1 * t198 + X1 * (t49 + t51 + t52 + t118 - t199)) * 2.0 +
+             t23 * (X1 * (-t97 + t112 + t116 + t117 - t192) + Y1 * (-t46 + t113 + t114 + t115 - t138) - Z1 * t195) * 2.0 +
+             t15 * (t204 + Z1 * (t97 - t112 + t116 + t117 - t192) - X1 * (-t200 + t201 + t202)) * 2.0) *
+            (1.0 / 2.0);
     jacs(1, 3) = s1 * t65 - t14 * t101 * t167 * t208 * (1.0 / 2.0);
     jacs(1, 4) = s2 * t65 - t14 * t101 * t167 * t212 * (1.0 / 2.0);
     jacs(1, 5) = s3 * t65 - t14 * t101 * t167 * t216 * (1.0 / 2.0);
 }
-} // End namespace ORB_SLAM3
+}  // End namespace ORB_SLAM3

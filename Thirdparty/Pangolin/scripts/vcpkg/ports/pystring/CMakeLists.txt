@@ -7,18 +7,12 @@ endif()
 
 add_library(pystring pystring.cpp)
 target_include_directories(
-  pystring
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
-)
+  pystring PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                  $<INSTALL_INTERFACE:include>)
 
 include(GNUInstallDirs)
 
-install(
-  TARGETS pystring
-  EXPORT pystring-config
-)
+install(TARGETS pystring EXPORT pystring-config)
 
 if(NOT DISABLE_INSTALL_HEADERS)
   install(FILES pystring.h DESTINATION include/pystring)
@@ -27,5 +21,4 @@ endif()
 install(
   EXPORT pystring-config
   NAMESPACE pystring::
-  DESTINATION share/pystring
-)
+  DESTINATION share/pystring)

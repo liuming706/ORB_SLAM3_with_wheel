@@ -18,35 +18,28 @@
 
 #include "OptimizableTypes.h"
 
-namespace ORB_SLAM3
-{
+namespace ORB_SLAM3 {
 bool EdgeSE3ProjectXYZOnlyPose::read(std::istream &is)
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         is >> _measurement[i];
     }
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             is >> information()(i, j);
-            if (i != j)
-                information()(j, i) = information()(i, j);
+            if (i != j) information()(j, i) = information()(i, j);
         }
     return true;
 }
 
 bool EdgeSE3ProjectXYZOnlyPose::write(std::ostream &os) const
 {
-
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         os << measurement()[i] << " ";
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             os << " " << information()(i, j);
         }
     return os.good();
@@ -65,40 +58,32 @@ void EdgeSE3ProjectXYZOnlyPose::linearizeOplus()
     double z = xyz_trans[2];
 
     Eigen::Matrix<double, 3, 6> SE3deriv;
-    SE3deriv << 0.f, z, -y, 1.f, 0.f, 0.f,
-        -z, 0.f, x, 0.f, 1.f, 0.f,
-        y, -x, 0.f, 0.f, 0.f, 1.f;
+    SE3deriv << 0.f, z, -y, 1.f, 0.f, 0.f, -z, 0.f, x, 0.f, 1.f, 0.f, y, -x, 0.f, 0.f, 0.f, 1.f;
 
     _jacobianOplusXi = -pCamera->projectJac(xyz_trans) * SE3deriv;
 }
 
 bool EdgeSE3ProjectXYZOnlyPoseToBody::read(std::istream &is)
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         is >> _measurement[i];
     }
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             is >> information()(i, j);
-            if (i != j)
-                information()(j, i) = information()(i, j);
+            if (i != j) information()(j, i) = information()(i, j);
         }
     return true;
 }
 
 bool EdgeSE3ProjectXYZOnlyPoseToBody::write(std::ostream &os) const
 {
-
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         os << measurement()[i] << " ";
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             os << " " << information()(i, j);
         }
     return os.good();
@@ -120,9 +105,7 @@ void EdgeSE3ProjectXYZOnlyPoseToBody::linearizeOplus()
     double z_w = X_l[2];
 
     Eigen::Matrix<double, 3, 6> SE3deriv;
-    SE3deriv << 0.f, z_w, -y_w, 1.f, 0.f, 0.f,
-        -z_w, 0.f, x_w, 0.f, 1.f, 0.f,
-        y_w, -x_w, 0.f, 0.f, 0.f, 1.f;
+    SE3deriv << 0.f, z_w, -y_w, 1.f, 0.f, 0.f, -z_w, 0.f, x_w, 0.f, 1.f, 0.f, y_w, -x_w, 0.f, 0.f, 0.f, 1.f;
 
     /*
     注意这里是对李代数求导，ρlw != tlw 所以不能使用Pl = Rlw*Pw + tlw
@@ -133,37 +116,32 @@ void EdgeSE3ProjectXYZOnlyPoseToBody::linearizeOplus()
     _jacobianOplusXi = -pCamera->projectJac(X_r) * mTrl.rotation().toRotationMatrix() * SE3deriv;
 }
 
-EdgeSE3ProjectXYZ::EdgeSE3ProjectXYZ() : BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, g2o::VertexSE3Expmap>()
+EdgeSE3ProjectXYZ::EdgeSE3ProjectXYZ() :
+    BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, g2o::VertexSE3Expmap>()
 {
 }
 
 bool EdgeSE3ProjectXYZ::read(std::istream &is)
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         is >> _measurement[i];
     }
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             is >> information()(i, j);
-            if (i != j)
-                information()(j, i) = information()(i, j);
+            if (i != j) information()(j, i) = information()(i, j);
         }
     return true;
 }
 
 bool EdgeSE3ProjectXYZ::write(std::ostream &os) const
 {
-
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         os << measurement()[i] << " ";
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             os << " " << information()(i, j);
         }
     return os.good();
@@ -189,44 +167,37 @@ void EdgeSE3ProjectXYZ::linearizeOplus()
     _jacobianOplusXi = projectJac * T.rotation().toRotationMatrix();
 
     Eigen::Matrix<double, 3, 6> SE3deriv;
-    SE3deriv << 0.f,   z,  -y, 1.f, 0.f, 0.f,
-                 -z, 0.f,   x, 0.f, 1.f, 0.f,
-                  y,  -x, 0.f, 0.f, 0.f, 1.f;
+    SE3deriv << 0.f, z, -y, 1.f, 0.f, 0.f, -z, 0.f, x, 0.f, 1.f, 0.f, y, -x, 0.f, 0.f, 0.f, 1.f;
 
     _jacobianOplusXj = projectJac * SE3deriv;
 }
 
-EdgeSE3ProjectXYZToBody::EdgeSE3ProjectXYZToBody() : BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, g2o::VertexSE3Expmap>()
+EdgeSE3ProjectXYZToBody::EdgeSE3ProjectXYZToBody() :
+    BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, g2o::VertexSE3Expmap>()
 {
 }
 
 bool EdgeSE3ProjectXYZToBody::read(std::istream &is)
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         is >> _measurement[i];
     }
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             is >> information()(i, j);
-            if (i != j)
-                information()(j, i) = information()(i, j);
+            if (i != j) information()(j, i) = information()(i, j);
         }
     return true;
 }
 
 bool EdgeSE3ProjectXYZToBody::write(std::ostream &os) const
 {
-
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         os << measurement()[i] << " ";
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             os << " " << information()(i, j);
         }
     return os.good();
@@ -252,9 +223,7 @@ void EdgeSE3ProjectXYZToBody::linearizeOplus()
     double z = X_l[2];
 
     Eigen::Matrix<double, 3, 6> SE3deriv;
-    SE3deriv << 0.f,   z,  -y, 1.f, 0.f, 0.f,
-                 -z, 0.f,   x, 0.f, 1.f, 0.f,
-                  y,  -x, 0.f, 0.f, 0.f, 1.f;
+    SE3deriv << 0.f, z, -y, 1.f, 0.f, 0.f, -z, 0.f, x, 0.f, 1.f, 0.f, y, -x, 0.f, 0.f, 0.f, 1.f;
     /*
         注意这里是对李代数求导，ρlw != tlw 所以不能使用Pl = Rlw*Pw + tlw
         Pl = EXP(ξlw)*Pw    Pr = Rrl * EXP(ξlw) * Pw + trl
@@ -273,21 +242,18 @@ VertexSim3Expmap::VertexSim3Expmap() : BaseVertex<7, g2o::Sim3>()
 bool VertexSim3Expmap::read(std::istream &is)
 {
     g2o::Vector7d cam2world;
-    for (int i = 0; i < 6; i++)
-    {
+    for (int i = 0; i < 6; i++) {
         is >> cam2world[i];
     }
     is >> cam2world[6];
 
     float nextParam;
-    for (size_t i = 0; i < pCamera1->size(); i++)
-    {
+    for (size_t i = 0; i < pCamera1->size(); i++) {
         is >> nextParam;
         pCamera1->setParameter(nextParam, i);
     }
 
-    for (size_t i = 0; i < pCamera2->size(); i++)
-    {
+    for (size_t i = 0; i < pCamera2->size(); i++) {
         is >> nextParam;
         pCamera2->setParameter(nextParam, i);
     }
@@ -300,94 +266,83 @@ bool VertexSim3Expmap::write(std::ostream &os) const
 {
     g2o::Sim3 cam2world(estimate().inverse());
     g2o::Vector7d lv = cam2world.log();
-    for (int i = 0; i < 7; i++)
-    {
+    for (int i = 0; i < 7; i++) {
         os << lv[i] << " ";
     }
 
-    for (size_t i = 0; i < pCamera1->size(); i++)
-    {
+    for (size_t i = 0; i < pCamera1->size(); i++) {
         os << pCamera1->getParameter(i) << " ";
     }
 
-    for (size_t i = 0; i < pCamera2->size(); i++)
-    {
+    for (size_t i = 0; i < pCamera2->size(); i++) {
         os << pCamera2->getParameter(i) << " ";
     }
 
     return os.good();
 }
 
-EdgeSim3ProjectXYZ::EdgeSim3ProjectXYZ() : g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, VertexSim3Expmap>()
+EdgeSim3ProjectXYZ::EdgeSim3ProjectXYZ() :
+    g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, VertexSim3Expmap>()
 {
 }
 
 bool EdgeSim3ProjectXYZ::read(std::istream &is)
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         is >> _measurement[i];
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             is >> information()(i, j);
-            if (i != j)
-                information()(j, i) = information()(i, j);
+            if (i != j) information()(j, i) = information()(i, j);
         }
     return true;
 }
 
 bool EdgeSim3ProjectXYZ::write(std::ostream &os) const
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         os << _measurement[i] << " ";
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             os << " " << information()(i, j);
         }
     return os.good();
 }
 
-EdgeInverseSim3ProjectXYZ::EdgeInverseSim3ProjectXYZ() : g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, VertexSim3Expmap>()
+EdgeInverseSim3ProjectXYZ::EdgeInverseSim3ProjectXYZ() :
+    g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, VertexSim3Expmap>()
 {
 }
 
 bool EdgeInverseSim3ProjectXYZ::read(std::istream &is)
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         is >> _measurement[i];
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             is >> information()(i, j);
-            if (i != j)
-                information()(j, i) = information()(i, j);
+            if (i != j) information()(j, i) = information()(i, j);
         }
     return true;
 }
 
 bool EdgeInverseSim3ProjectXYZ::write(std::ostream &os) const
 {
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         os << _measurement[i] << " ";
     }
 
     for (int i = 0; i < 2; i++)
-        for (int j = i; j < 2; j++)
-        {
+        for (int j = i; j < 2; j++) {
             os << " " << information()(i, j);
         }
     return os.good();
 }
 
-}
+}  // namespace ORB_SLAM3

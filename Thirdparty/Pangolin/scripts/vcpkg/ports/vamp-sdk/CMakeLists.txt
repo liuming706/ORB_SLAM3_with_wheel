@@ -67,8 +67,8 @@ set_target_properties(vamp-hostsdk PROPERTIES PUBLIC_HEADER
 # library file names than autotools.
 # https://github.com/tenacityteam/tenacity/pull/577#discussion_r702328284
 if(WIN32)
-    set_target_properties(vamp-sdk PROPERTIES OUTPUT_NAME VampPluginSDK)
-    set_target_properties(vamp-hostsdk PROPERTIES OUTPUT_NAME VampHostSDK)
+  set_target_properties(vamp-sdk PROPERTIES OUTPUT_NAME VampPluginSDK)
+  set_target_properties(vamp-hostsdk PROPERTIES OUTPUT_NAME VampHostSDK)
 endif()
 
 set_property(TARGET vamp-sdk PROPERTY CXX_STANDARD 11)
@@ -81,9 +81,12 @@ target_link_libraries(vamp-hostsdk PUBLIC SndFile::sndfile)
 
 target_link_libraries(vamp-sdk PUBLIC SndFile::sndfile)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/vamp.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/vamp.pc" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/vamp-hostsdk.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/vamp-hostsdk.pc" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/vamp-sdk.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/vamp-sdk.pc" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/vamp.pc.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/vamp.pc" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/vamp-hostsdk.pc.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/vamp-hostsdk.pc" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/vamp-sdk.pc.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/vamp-sdk.pc" @ONLY)
 file(GLOB PKGCONFIG_FILES "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/*.pc")
 install(FILES ${PKGCONFIG_FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 

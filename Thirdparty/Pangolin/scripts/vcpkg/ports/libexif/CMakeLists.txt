@@ -22,8 +22,7 @@ set(HEADERS
     libexif/exif-mnote-data-priv.h
     libexif/exif-system.h
     libexif/exif-tag.h
-    libexif/exif-utils.h
-)
+    libexif/exif-utils.h)
 
 set(SOURCES
     libexif/exif-byte-order.c
@@ -37,69 +36,44 @@ set(SOURCES
     libexif/exif-mem.c
     libexif/exif-mnote-data.c
     libexif/exif-tag.c
-    libexif/exif-utils.c
-)
+    libexif/exif-utils.c)
 
 set(HEADERS_CANON
-    libexif/canon/exif-mnote-data-canon.h
-    libexif/canon/mnote-canon-entry.h
-    libexif/canon/mnote-canon-tag.h
-)
+    libexif/canon/exif-mnote-data-canon.h libexif/canon/mnote-canon-entry.h
+    libexif/canon/mnote-canon-tag.h)
 
 set(SOURCES_CANON
-    libexif/canon/exif-mnote-data-canon.c
-    libexif/canon/mnote-canon-entry.c
-    libexif/canon/mnote-canon-tag.c
-)
+    libexif/canon/exif-mnote-data-canon.c libexif/canon/mnote-canon-entry.c
+    libexif/canon/mnote-canon-tag.c)
 
-set(HEADERS_FUJI
-    libexif/fuji/exif-mnote-data-fuji.h
-    libexif/fuji/mnote-fuji-entry.h
-    libexif/fuji/mnote-fuji-tag.h
-)
+set(HEADERS_FUJI libexif/fuji/exif-mnote-data-fuji.h
+                 libexif/fuji/mnote-fuji-entry.h libexif/fuji/mnote-fuji-tag.h)
 
-set(SOURCES_FUJI
-    libexif/fuji/exif-mnote-data-fuji.c
-    libexif/fuji/mnote-fuji-entry.c
-    libexif/fuji/mnote-fuji-tag.c
-)
+set(SOURCES_FUJI libexif/fuji/exif-mnote-data-fuji.c
+                 libexif/fuji/mnote-fuji-entry.c libexif/fuji/mnote-fuji-tag.c)
 
 set(HEADERS_OLYMPUS
     libexif/olympus/exif-mnote-data-olympus.h
-    libexif/olympus/mnote-olympus-entry.h
-    libexif/olympus/mnote-olympus-tag.h
-)
+    libexif/olympus/mnote-olympus-entry.h libexif/olympus/mnote-olympus-tag.h)
 
 set(SOURCES_OLYMPUS
     libexif/olympus/exif-mnote-data-olympus.c
-    libexif/olympus/mnote-olympus-entry.c
-    libexif/olympus/mnote-olympus-tag.c
-)
+    libexif/olympus/mnote-olympus-entry.c libexif/olympus/mnote-olympus-tag.c)
 
 set(HEADERS_PENTAX
-    libexif/pentax/exif-mnote-data-pentax.h
-    libexif/pentax/mnote-pentax-entry.h
-    libexif/pentax/mnote-pentax-tag.h
-)
+    libexif/pentax/exif-mnote-data-pentax.h libexif/pentax/mnote-pentax-entry.h
+    libexif/pentax/mnote-pentax-tag.h)
 
 set(SOURCES_PENTAX
-    libexif/pentax/exif-mnote-data-pentax.c
-    libexif/pentax/mnote-pentax-entry.c
-    libexif/pentax/mnote-pentax-tag.c
-)
+    libexif/pentax/exif-mnote-data-pentax.c libexif/pentax/mnote-pentax-entry.c
+    libexif/pentax/mnote-pentax-tag.c)
 
 if(MSVC)
-    set(SOURCES_MSVC "libexif.def")
+  set(SOURCES_MSVC "libexif.def")
 endif()
 
-add_library(libexif
-    ${SOURCES} 
-    ${SOURCES_CANON} 
-    ${SOURCES_FUJI} 
-    ${SOURCES_OLYMPUS}
-    ${SOURCES_PENTAX}
-    ${SOURCES_MSVC}
-)
+add_library(libexif ${SOURCES} ${SOURCES_CANON} ${SOURCES_FUJI}
+                    ${SOURCES_OLYMPUS} ${SOURCES_PENTAX} ${SOURCES_MSVC})
 
 target_include_directories(libexif PRIVATE .)
 target_include_directories(libexif PRIVATE ${CMAKE_BINARY_DIR})
@@ -129,14 +103,13 @@ check_include_file(unistd.h HAVE_UNISTD_H)
 configure_file(config.h.cmake config.h)
 
 install(
-    TARGETS libexif
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-)
+  TARGETS libexif
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
-install(FILES ${HEADERS}         DESTINATION include/libexif)
-install(FILES ${HEADERS_CANON}   DESTINATION include/libexif/canon)
-install(FILES ${HEADERS_FUJI}    DESTINATION include/libexif/fuji)
+install(FILES ${HEADERS} DESTINATION include/libexif)
+install(FILES ${HEADERS_CANON} DESTINATION include/libexif/canon)
+install(FILES ${HEADERS_FUJI} DESTINATION include/libexif/fuji)
 install(FILES ${HEADERS_OLYMPUS} DESTINATION include/libexif/olympus)
-install(FILES ${HEADERS_PENTAX}  DESTINATION include/libexif/pentax)
+install(FILES ${HEADERS_PENTAX} DESTINATION include/libexif/pentax)

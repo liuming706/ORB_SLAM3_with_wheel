@@ -11,8 +11,7 @@ set(PLIST_SRC
     src/time64.c
     src/xplist.c
     src/bplist.c
-    src/plist.c
-)
+    src/plist.c)
 
 set(PLISTPP_SRC
     src/Node.cpp
@@ -26,38 +25,38 @@ set(PLISTPP_SRC
     src/Key.cpp
     src/Real.cpp
     src/String.cpp
-    src/Uid.cpp
-)
+    src/Uid.cpp)
 
 file(GLOB_RECURSE LIBCNARY_HEADER libcnary/include/*.h)
 file(GLOB_RECURSE LIBCNARY_SRC libcnary/*c)
 
-add_library(plist ${PLIST_SRC} ${PLIST_HEADER} ${LIBCNARY_SRC} ${LIBCNARY_HEADER})
+add_library(plist ${PLIST_SRC} ${PLIST_HEADER} ${LIBCNARY_SRC}
+                  ${LIBCNARY_HEADER})
 target_include_directories(plist PRIVATE src include libcnary/include)
 set_target_properties(plist PROPERTIES OUTPUT_NAME plist-2.0)
 
-add_library(plist++ STATIC ${PLISTPP_SRC} ${PLIST_HEADER} ${LIBCNARY_SRC} ${LIBCNARY_HEADER})
+add_library(plist++ STATIC ${PLISTPP_SRC} ${PLIST_HEADER} ${LIBCNARY_SRC}
+                           ${LIBCNARY_HEADER})
 set_target_properties(plist++ PROPERTIES OUTPUT_NAME plist++-2.0)
 target_include_directories(plist++ PRIVATE src include libcnary/include)
 
 if(WIN32 AND BUILD_SHARED_LIBS)
-    target_compile_options(plist PRIVATE -W3 -WX- -sdl-)
-    target_compile_definitions(plist PRIVATE -DLIBPLIST_EXPORTS)
-    target_compile_options(plist++ PRIVATE -W3 -WX- -sdl-)
-    target_compile_definitions(plist++ PRIVATE -DLIBPLIST_EXPORTS)
+  target_compile_options(plist PRIVATE -W3 -WX- -sdl-)
+  target_compile_definitions(plist PRIVATE -DLIBPLIST_EXPORTS)
+  target_compile_options(plist++ PRIVATE -W3 -WX- -sdl-)
+  target_compile_definitions(plist++ PRIVATE -DLIBPLIST_EXPORTS)
 endif()
 if(NOT BUILD_SHARED_LIBS)
-    target_compile_definitions(plist PRIVATE -DLIBPLIST_STATIC_LIBRARY)
+  target_compile_definitions(plist PRIVATE -DLIBPLIST_STATIC_LIBRARY)
 endif()
 
 target_link_libraries(plist++ PRIVATE plist)
 
 install(
-    TARGETS plist plist++
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-)
+  TARGETS plist plist++
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
 set(PACKAGE_NAME libplist)
 set(PACKAGE_VERSION 2.0)
@@ -65,15 +64,11 @@ set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix \${prefix})
 set(libdir \${prefix}/lib)
 set(includedir \${prefix}/../include)
-foreach (PLIST_PKGCONFIG libplist-2.0.pc libplist++-2.0.pc)
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/${PLIST_PKGCONFIG}.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PLIST_PKGCONFIG}
-    @ONLY
-)
-install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PLIST_PKGCONFIG}
-    DESTINATION lib/pkgconfig)
+foreach(PLIST_PKGCONFIG libplist-2.0.pc libplist++-2.0.pc)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/${PLIST_PKGCONFIG}.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/${PLIST_PKGCONFIG} @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PLIST_PKGCONFIG}
+          DESTINATION lib/pkgconfig)
 endforeach()
 
 install(FILES ${PLIST_HEADER} DESTINATION include/plist)

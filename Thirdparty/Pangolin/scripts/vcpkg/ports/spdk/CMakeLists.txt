@@ -1,45 +1,54 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
-PROJECT(spdk C)
+cmake_minimum_required(VERSION 3.9)
+project(spdk C)
 
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
-LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}")
 
-FIND_PACKAGE(Numa REQUIRED)
-FIND_PACKAGE(uuid REQUIRED)
-FIND_PACKAGE(ibverbs REQUIRED)
-FIND_PACKAGE(RDMA REQUIRED)
-FIND_PACKAGE(OpenSSL REQUIRED)
-FIND_PACKAGE(Python COMPONENTS Interpreter REQUIRED)
+find_package(Numa REQUIRED)
+find_package(uuid REQUIRED)
+find_package(ibverbs REQUIRED)
+find_package(RDMA REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(
+  Python
+  COMPONENTS Interpreter
+  REQUIRED)
 
-FIND_PROGRAM(MAKE make)
+find_program(MAKE make)
 
-IF (SOURCE_PATH)
-    SET(CMAKE_SOURCE_DIR ${SOURCE_PATH})
-ENDIF ()
+if(SOURCE_PATH)
+  set(CMAKE_SOURCE_DIR ${SOURCE_PATH})
+endif()
 
-SET(SPDK_CONFIG --disable-tests --with-rdma --without-isal --with-dpdk=${CMAKE_SOURCE_DIR}/../../../spdk-dpdk/src/spdk-18.11-411c51fb97/build)
-# No option to define path for isa-l (--with-isal=${CMAKE_SOURCE_DIR}/../../../spdk-isal/src/spdk-d34ebb51cd)
-IF (CMAKE_BUILD_TYPE STREQUAL Debug)
-    LIST(APPEND ${SPDK_CONFIG} --enable-debug)
-ENDIF ()
+set(SPDK_CONFIG
+    --disable-tests
+    --with-rdma
+    --without-isal
+    --with-dpdk=${CMAKE_SOURCE_DIR}/../../../spdk-dpdk/src/spdk-18.11-411c51fb97/build
+)
+# No option to define path for isa-l
+# (--with-isal=${CMAKE_SOURCE_DIR}/../../../spdk-isal/src/spdk-d34ebb51cd)
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  list(APPEND ${SPDK_CONFIG} --enable-debug)
+endif()
 
-SET(DPDK_CONFIG "-fPIC")
-IF (CMAKE_BUILD_TYPE STREQUAL Debug)
-    STRING(APPEND ${DPDK_CONFIG} "-O0 -g")
-ENDIF ()
+set(DPDK_CONFIG "-fPIC")
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  string(APPEND ${DPDK_CONFIG} "-O0 -g")
+endif()
 
-ADD_CUSTOM_TARGET(spdk-configure
-                  COMMAND ./configure ${SPDK_CONFIG}
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
-                  VERBATIM
-                  )
+add_custom_target(
+  spdk-configure
+  COMMAND ./configure ${SPDK_CONFIG}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
+  VERBATIM)
 
-ADD_CUSTOM_TARGET(spdk ALL
-                  COMMAND ${MAKE} -j DPDK_CFLAGS=${DPDK_CONFIG}
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
-                  )
+add_custom_target(
+  spdk ALL
+  COMMAND ${MAKE} -j DPDK_CFLAGS=${DPDK_CONFIG}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/)
 
-ADD_DEPENDENCIES(spdk spdk-configure)
+add_dependencies(spdk spdk-configure)
 
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib
         DESTINATION ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/)

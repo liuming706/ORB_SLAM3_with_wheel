@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 cmake_policy(VERSION 3.11)
 
-project (rappture)
+project(rappture)
 
 set(SRC_RAPPTURE_CORE
     src/core/scew_extras.c
@@ -40,8 +40,7 @@ set(SRC_RAPPTURE_CORE
     src/core/scew/xerror.c
     src/core/scew/xhandler.c
     src/core/scew/xparser.c
-    src/core/scew/xprint.c
-)
+    src/core/scew/xprint.c)
 
 set(HEADERS
     src/core/rappture.h
@@ -74,39 +73,34 @@ set(HEADERS
     src/core/RpUtilsCInterface.h
     src/core/RpUtilsFInterface.h
     src/core/RpUtilsFStubs.h
-    src/core/scew_extras.h
-
-)
+    src/core/scew_extras.h)
 
 add_library(rappture ${SRC_RAPPTURE_CORE} ${HEADERS})
 
 set_property(TARGET rappture PROPERTY CXX_STANDARD 11)
 
-target_include_directories(rappture PUBLIC
-                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/core/>
-                            $<INSTALL_INTERFACE:include>
-)
+target_include_directories(
+  rappture PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/core/>
+                  $<INSTALL_INTERFACE:include>)
 
 find_package(expat CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
-target_compile_definitions(rappture PUBLIC
-                            -D_CRT_SECURE_NO_WARNINGS
-                            -DRAPPTURE_VERSION=1.9
-                            -DSVN_VERSION=6713
-                            -D_USE_MATH_DEFINES
-)
+target_compile_definitions(
+  rappture PUBLIC -D_CRT_SECURE_NO_WARNINGS -DRAPPTURE_VERSION=1.9
+                  -DSVN_VERSION=6713 -D_USE_MATH_DEFINES)
 
-target_link_libraries(rappture PRIVATE
-                        expat::expat
-                        ZLIB::ZLIB
-)
+target_link_libraries(rappture PRIVATE expat::expat ZLIB::ZLIB)
 
-install(TARGETS rappture EXPORT rappture-config
-            RUNTIME DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-        )
+install(
+  TARGETS rappture
+  EXPORT rappture-config
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
 install(FILES ${HEADERS} DESTINATION include/rappture)
-install(EXPORT rappture-config NAMESPACE unofficial::rappture:: DESTINATION share/rappture)
+install(
+  EXPORT rappture-config
+  NAMESPACE unofficial::rappture::
+  DESTINATION share/rappture)

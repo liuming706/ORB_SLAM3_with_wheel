@@ -9,15 +9,13 @@ file(GLOB libmujs_sources js*.c utf*.c regexp.c)
 
 include_directories(.)
 
-
 add_library(libmujs ${libmujs_sources})
 
 install(
   TARGETS libmujs
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 if(NOT DISABLE_INSTALL_HEADERS)
   install(FILES mujs.h DESTINATION include)

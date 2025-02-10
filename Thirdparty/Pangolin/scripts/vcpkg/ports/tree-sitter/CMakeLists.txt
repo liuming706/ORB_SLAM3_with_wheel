@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.20)
 project(
   tree-sitter
   LANGUAGES C
-  VERSION 0.20.6
-)
+  VERSION 0.20.6)
 
 set(TS_SOVERSION_MAJOR 0)
 set(TS_SOVERSION_MINOR 0)
 
 file(GLOB TS_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.c")
-list(REMOVE_ITEM TS_SRC_FILES "${PROJECT_SOURCE_DIR}/src/lib.c") # skip amalgamation
+list(REMOVE_ITEM TS_SRC_FILES "${PROJECT_SOURCE_DIR}/src/lib.c") # skip
+                                                                 # amalgamation
 
 include(GNUInstallDirs)
 

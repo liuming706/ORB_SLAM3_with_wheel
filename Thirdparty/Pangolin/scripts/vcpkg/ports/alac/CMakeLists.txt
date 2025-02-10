@@ -1,35 +1,29 @@
-cmake_minimum_required (VERSION 3.9)
-project (alac)
+cmake_minimum_required(VERSION 3.9)
+project(alac)
 
 set(HEADERS
-  codec/EndianPortable.h
-  codec/aglib.h
-  codec/ALACAudioTypes.h
-  codec/ALACBitUtilities.h
-  codec/ALACDecoder.h
-  codec/ALACEncoder.h
-  codec/dplib.h
-  codec/matrixlib.h
-)
+    codec/EndianPortable.h
+    codec/aglib.h
+    codec/ALACAudioTypes.h
+    codec/ALACBitUtilities.h
+    codec/ALACDecoder.h
+    codec/ALACEncoder.h
+    codec/dplib.h
+    codec/matrixlib.h)
 
+set(SRCS
+    codec/EndianPortable.c
+    codec/ALACBitUtilities.c
+    codec/ALACDecoder.cpp
+    codec/ALACEncoder.cpp
+    codec/ag_dec.c
+    codec/ag_enc.c
+    codec/dp_dec.c
+    codec/dp_enc.c
+    codec/matrix_dec.c
+    codec/matrix_enc.c)
 
-set (SRCS
-  codec/EndianPortable.c
-  codec/ALACBitUtilities.c
-  codec/ALACDecoder.cpp
-  codec/ALACEncoder.cpp
-  codec/ag_dec.c
-  codec/ag_enc.c
-  codec/dp_dec.c
-  codec/dp_enc.c
-  codec/matrix_dec.c
-  codec/matrix_enc.c
-)
-
-set(EXE_SRCS
-  convert-utility/main.cpp
-  convert-utility/CAFFileALAC.cpp
-)
+set(EXE_SRCS convert-utility/main.cpp convert-utility/CAFFileALAC.cpp)
 
 if(MSVC)
   add_compile_options(/W4 -D_CRT_SECURE_NO_WARNINGS -DTARGET_OS_WIN32)
@@ -46,14 +40,10 @@ install(
   TARGETS libalac
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 if(NOT DISABLE_INSTALL_TOOLS)
-  install (
-    TARGETS alacconvert
-    RUNTIME DESTINATION tools/alac
-  )
+  install(TARGETS alacconvert RUNTIME DESTINATION tools/alac)
 endif()
 
 if(NOT DISABLE_INSTALL_HEADERS)

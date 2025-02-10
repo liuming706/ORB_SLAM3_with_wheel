@@ -1,57 +1,59 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
-PROJECT(ipsec C)
+cmake_minimum_required(VERSION 3.9)
+project(ipsec C)
 
-IF (SOURCE_PATH)
-    SET(CMAKE_SOURCE_DIR ${SOURCE_PATH})
-ENDIF ()
+if(SOURCE_PATH)
+  set(CMAKE_SOURCE_DIR ${SOURCE_PATH})
+endif()
 
-INCLUDE(ProcessorCount)
-PROCESSORCOUNT(PROCS)
+include(ProcessorCount)
+ProcessorCount(PROCS)
 
-FIND_PROGRAM(NASM nasm)
-IF (NOT NASM)
-    MESSAGE(FATAL_ERROR "NASM not found")
-ENDIF ()
+find_program(NASM nasm)
+if(NOT NASM)
+  message(FATAL_ERROR "NASM not found")
+endif()
 
-FIND_PROGRAM(MAKE make)
-IF (NOT MAKE)
-    MESSAGE(FATAL_ERROR "MAKE not found")
-ENDIF ()
+find_program(MAKE make)
+if(NOT MAKE)
+  message(FATAL_ERROR "MAKE not found")
+endif()
 
-IF (EXEC_ENV STREQUAL "Windows")
-    FIND_PROGRAM(MAKE nmake)
-    IF (NOT MAKE)
-        MESSAGE(FATAL_ERROR "nmake not found")
-    ENDIF ()
-ENDIF ()
+if(EXEC_ENV STREQUAL "Windows")
+  find_program(MAKE nmake)
+  if(NOT MAKE)
+    message(FATAL_ERROR "nmake not found")
+  endif()
+endif()
 
-SET(MAKE_FLAGS)
+set(MAKE_FLAGS)
 
-IF (EXEC_ENV STREQUAL "Windows")
-    LIST(APPEND MAKE_FLAGS /f win_x64.mak)
-ENDIF ()
+if(EXEC_ENV STREQUAL "Windows")
+  list(APPEND MAKE_FLAGS /f win_x64.mak)
+endif()
 
-IF (CMAKE_BUILD_TYPE STREQUAL Debug)
-    LIST(APPEND MAKE_FLAGS DEBUG=y)
-ENDIF ()
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  list(APPEND MAKE_FLAGS DEBUG=y)
+endif()
 
-IF (NOT BUILD_SHARED_LIBS)
-    LIST(APPEND MAKE_FLAGS SHARED=n)
-ENDIF ()
+if(NOT BUILD_SHARED_LIBS)
+  list(APPEND MAKE_FLAGS SHARED=n)
+endif()
 
-MESSAGE(STATUS "${MAKE_FLAGS}")
-ADD_CUSTOM_TARGET(ipsec-mb ALL
-                  COMMAND ${MAKE} -j ${MAKE_FLAGS}
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
-#                  VERBATIM
-                  )
+message(STATUS "${MAKE_FLAGS}")
+add_custom_target(
+  ipsec-mb ALL
+  COMMAND ${MAKE} -j ${MAKE_FLAGS}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/
+  # VERBATIM
+)
 
-SET(LIB_PATH ${CMAKE_SOURCE_DIR}/)
-IF(BUILD_SHARED_LIBS)
-    STRING(APPEND LIB_PATH libIPSec_MB.so)
-ELSE ()
-    STRING(APPEND LIB_PATH libIPSec_MB.a)
-ENDIF ()
-INSTALL(FILES ${LIB_PATH}
+set(LIB_PATH ${CMAKE_SOURCE_DIR}/)
+if(BUILD_SHARED_LIBS)
+  string(APPEND LIB_PATH libIPSec_MB.so)
+else()
+  string(APPEND LIB_PATH libIPSec_MB.a)
+endif()
+install(FILES ${LIB_PATH}
         DESTINATION ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/lib/)
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include
+        DESTINATION ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/)

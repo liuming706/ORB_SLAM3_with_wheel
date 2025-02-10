@@ -15,12 +15,8 @@ install(
   TARGETS libmodpbase64
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 if(NOT DISABLE_INSTALL_HEADERS)
-  install(
-    FILES ${SOURCE_PATH}/src/modp_b64.h
-    DESTINATION include
-  )
+  install(FILES ${SOURCE_PATH}/src/modp_b64.h DESTINATION include)
 endif()

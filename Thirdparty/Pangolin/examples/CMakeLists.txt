@@ -10,6 +10,6 @@ add_subdirectory(SimpleVideo)
 add_subdirectory(SimpleRecord)
 
 if(NOT EMSCRIPTEN)
-    add_subdirectory(HelloPangolinOffscreen)
-    add_subdirectory(SimpleScene)
+  add_subdirectory(HelloPangolinOffscreen)
+  add_subdirectory(SimpleScene)
 endif()

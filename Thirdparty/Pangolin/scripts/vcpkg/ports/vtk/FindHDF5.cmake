@@ -25,6 +25,12 @@ elseif(TARGET hdf5::hdf5_hl-static)
 else()
   message(FATAL_ERROR "HDF5 HL target not found")
 endif()
-set(HDF5_IS_PARALLEL ${HDF5_ENABLE_PARALLEL} CACHE BOOL "" FORCE)
-set(HDF5_FOUND ON CACHE BOOL "" FORCE)
-set(hdf5_FOUND ON CACHE BOOL "" FORCE)
+set(HDF5_IS_PARALLEL
+    ${HDF5_ENABLE_PARALLEL}
+    CACHE BOOL "" FORCE)
+set(HDF5_FOUND
+    ON
+    CACHE BOOL "" FORCE)
+set(hdf5_FOUND
+    ON
+    CACHE BOOL "" FORCE)

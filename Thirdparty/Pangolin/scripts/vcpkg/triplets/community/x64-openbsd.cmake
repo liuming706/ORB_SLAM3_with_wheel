@@ -1,5 +1,4 @@
-# Use with
-#  VCPKG_FORCE_SYSTEM_BINARIES=1 ./vcpkg install brotli
+# Use with VCPKG_FORCE_SYSTEM_BINARIES=1 ./vcpkg install brotli
 
 set(VCPKG_TARGET_ARCHITECTURE x64)
 set(VCPKG_CRT_LINKAGE dynamic)

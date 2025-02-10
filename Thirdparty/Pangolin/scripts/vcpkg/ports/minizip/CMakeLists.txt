@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
-project(minizip VERSION 1.2.13 LANGUAGES C)
+project(
+  minizip
+  VERSION 1.2.13
+  LANGUAGES C)
 
 if(MSVC)
   add_compile_options(/W3 /wd4005 /wd4996 /wd4018 -D_CRT_SECURE_NO_WARNINGS)
@@ -21,23 +24,14 @@ else()
   message(STATUS "Building without bzip2 support")
 endif()
 
-set(SRC
-  ${MIN_SRC}/ioapi.c
-  ${MIN_SRC}/unzip.c
-  ${MIN_SRC}/zip.c
-  ${MIN_SRC}/mztools.c
-)
+set(SRC ${MIN_SRC}/ioapi.c ${MIN_SRC}/unzip.c ${MIN_SRC}/zip.c
+        ${MIN_SRC}/mztools.c)
 if(WIN32)
   list(APPEND SRC ${MIN_SRC}/iowin32.c)
 endif()
 
-set(HEADERS
-  ${MIN_SRC}/crypt.h
-  ${MIN_SRC}/ioapi.h
-  ${MIN_SRC}/unzip.h
-  ${MIN_SRC}/zip.h
-  ${MIN_SRC}/mztools.h
-)
+set(HEADERS ${MIN_SRC}/crypt.h ${MIN_SRC}/ioapi.h ${MIN_SRC}/unzip.h
+            ${MIN_SRC}/zip.h ${MIN_SRC}/mztools.h)
 if(WIN32)
   list(APPEND HEADERS ${MIN_SRC}/iowin32.h)
 endif()
@@ -70,33 +64,28 @@ install(
   EXPORT minizipTargets
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${PROJECT_BINARY_DIR}/minizipConfigVersion.cmake"
-                                    COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file(
+  "${PROJECT_BINARY_DIR}/minizipConfigVersion.cmake"
+  COMPATIBILITY SameMajorVersion)
 
-configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/minizipConfig.cmake.in
-                                minizipConfig.cmake
-                                INSTALL_DESTINATION share/minizip)
+configure_package_config_file(
+  ${PROJECT_SOURCE_DIR}/cmake/minizipConfig.cmake.in minizipConfig.cmake
+  INSTALL_DESTINATION share/minizip)
 
-install(FILES
-        "${PROJECT_BINARY_DIR}/minizipConfig.cmake"
-        "${PROJECT_BINARY_DIR}/minizipConfigVersion.cmake"
-        DESTINATION share/minizip
-)
+install(FILES "${PROJECT_BINARY_DIR}/minizipConfig.cmake"
+              "${PROJECT_BINARY_DIR}/minizipConfigVersion.cmake"
+        DESTINATION share/minizip)
 
-install(EXPORT minizipTargets
-        NAMESPACE minizip::
-        DESTINATION share/minizip
-)
+install(
+  EXPORT minizipTargets
+  NAMESPACE minizip::
+  DESTINATION share/minizip)
 
 if(NOT DISABLE_INSTALL_TOOLS)
-  install (
-    TARGETS minizip_bin miniunz_bin
-    RUNTIME DESTINATION tools/minizip
-  )
+  install(TARGETS minizip_bin miniunz_bin RUNTIME DESTINATION tools/minizip)
 endif()
 
 if(NOT DISABLE_INSTALL_HEADERS)

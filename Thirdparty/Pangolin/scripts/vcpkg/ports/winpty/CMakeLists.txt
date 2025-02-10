@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.12.0)
 
 set(PROJECT_VERSION "0.4.3")
-project(winpty VERSION ${PROJECT_VERSION} LANGUAGES CXX)
+project(
+  winpty
+  VERSION ${PROJECT_VERSION}
+  LANGUAGES CXX)
 
 add_definitions(-DPROJECT_VERSION="${PROJECT_VERSION}")
 add_definitions(-D_WIN32_WINNT=0x0600)
@@ -10,9 +13,9 @@ add_definitions(-D_UNICODE)
 add_definitions(-DNOMINMAX)
 
 if("${BUILD_TYPE}" STREQUAL "STATIC")
-    add_definitions(-DBUILD_STATIC)
+  add_definitions(-DBUILD_STATIC)
 else()
-    add_definitions(-DCOMPILING_WINPTY_DLL)
+  add_definitions(-DCOMPILING_WINPTY_DLL)
 endif()
 
 set(CMAKE_CXX_STANDARD 11)
@@ -24,7 +27,7 @@ set(WINPTY_INSTALL_LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 
 include_directories(${WINPTY_INSTALL_INCLUDE_DIR})
 
-#winpty library
+# winpty library
 set(WINPTYLIB_SOURCE_FILES
     src/include/winpty.h
     src/libwinpty/AgentLocation.cc
@@ -55,14 +58,13 @@ set(WINPTYLIB_SOURCE_FILES
     src/shared/WinptyException.cc
     src/shared/WinptyVersion.h
     src/shared/WinptyVersion.cc
-    src/shared/winpty_snprintf.h
-)
+    src/shared/winpty_snprintf.h)
 
-add_library( winpty ${BUILD_TYPE} ${WINPTYLIB_SOURCE_FILES} )
+add_library(winpty ${BUILD_TYPE} ${WINPTYLIB_SOURCE_FILES})
 
-#winpty agent executable
+# winpty agent executable
 set(WINPTYAGENT_SOURCE_FILES
-	src/agent/Agent.h
+    src/agent/Agent.h
     src/agent/Agent.cc
     src/agent/AgentCreateDesktop.h
     src/agent/AgentCreateDesktop.cc
@@ -126,14 +128,12 @@ set(WINPTYAGENT_SOURCE_FILES
     src/shared/WinptyException.cc
     src/shared/WinptyVersion.h
     src/shared/WinptyVersion.cc
-    src/shared/winpty_snprintf.h
-)
+    src/shared/winpty_snprintf.h)
 
 add_executable(winpty-agent ${WINPTYAGENT_SOURCE_FILES})
 target_compile_definitions(winpty-agent PRIVATE -DWINPTY_AGENT_ASSERT)
 
-
-#winpty debugserver executable
+# winpty debugserver executable
 set(WINPTYAGENT_SOURCE_FILES
     src/debugserver/DebugServer.cc
     src/shared/DebugClient.h
@@ -152,21 +152,19 @@ set(WINPTYAGENT_SOURCE_FILES
     src/shared/WinptyAssert.cc
     src/shared/WinptyException.h
     src/shared/WinptyException.cc
-    src/shared/winpty_snprintf.h
-)
+    src/shared/winpty_snprintf.h)
 
 add_executable(winpty-debugserver ${WINPTYAGENT_SOURCE_FILES})
 
-
 if("${BUILD_TYPE}" STREQUAL "STATIC")
-    install(TARGETS winpty DESTINATION ${WINPTY_INSTALL_LIB_DIR})
+  install(TARGETS winpty DESTINATION ${WINPTY_INSTALL_LIB_DIR})
 else()
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/winpty.dll DESTINATION ${WINPTY_INSTALL_BIN_DIR})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/winpty.lib DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/winpty.dll
+          DESTINATION ${WINPTY_INSTALL_BIN_DIR})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/winpty.lib
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
 install(TARGETS winpty-agent DESTINATION ${WINPTY_INSTALL_BIN_DIR})
 install(TARGETS winpty-debugserver DESTINATION ${WINPTY_INSTALL_BIN_DIR})
-install(FILES src/include/winpty.h src/include/winpty_constants.h DESTINATION ${WINPTY_INSTALL_INCLUDE_DIR})
-
-
-
+install(FILES src/include/winpty.h src/include/winpty_constants.h
+        DESTINATION ${WINPTY_INSTALL_INCLUDE_DIR})

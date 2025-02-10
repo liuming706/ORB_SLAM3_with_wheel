@@ -3,18 +3,10 @@ project(boinc)
 
 find_package(OpenSSL REQUIRED)
 
-set(LIBBOINC_HEADERS_WIN
-    lib/boinc_win.h
-    lib/diagnostics_win.h
-    lib/idlemon.h
-    lib/stackwalker_imports.h
-    lib/stackwalker_win.h
-)
+set(LIBBOINC_HEADERS_WIN lib/boinc_win.h lib/diagnostics_win.h lib/idlemon.h
+                         lib/stackwalker_imports.h lib/stackwalker_win.h)
 
-set(LIBBOINC_HEADERS_UNIX
-    lib/synch.h
-    lib/unix_util.h
-)
+set(LIBBOINC_HEADERS_UNIX lib/synch.h lib/unix_util.h)
 
 set(LIBBOINC_HEADERS_APPLE
     lib/mac/dyld_gdb.h
@@ -26,8 +18,7 @@ set(LIBBOINC_HEADERS_APPLE
     lib/mac/QMachOImageList.h
     lib/mac/QSymbols.h
     lib/mac/QTaskMemory.h
-    lib/mac/mac_branding.h
-)
+    lib/mac/mac_branding.h)
 
 set(LIBBOINC_HEADERS_GENERIC
     lib/app_ipc.h
@@ -64,23 +55,13 @@ set(LIBBOINC_HEADERS_GENERIC
     lib/url.h
     lib/util.h
     lib/win_util.h
-    lib/wslinfo.h
-)
+    lib/wslinfo.h)
 
 set(LIBBOINC_SOURCES_WIN
-    lib/boinc_win.cpp
-    lib/diagnostics_win.cpp
-    lib/idlemon_win.cpp
-    lib/procinfo_win.cpp
-    lib/stackwalker_win.cpp
-    lib/win_util.cpp
-)
+    lib/boinc_win.cpp lib/diagnostics_win.cpp lib/idlemon_win.cpp
+    lib/procinfo_win.cpp lib/stackwalker_win.cpp lib/win_util.cpp)
 
-set(LIBBOINC_SOURCES_UNIX
-    lib/procinfo_unix.cpp
-    lib/synch.cpp
-    lib/unix_util.cpp
-)
+set(LIBBOINC_SOURCES_UNIX lib/procinfo_unix.cpp lib/synch.cpp lib/unix_util.cpp)
 
 set(LIBBOINC_SOURCES_APPLE
     lib/procinfo_mac.cpp
@@ -92,8 +73,7 @@ set(LIBBOINC_SOURCES_APPLE
     lib/mac/QMachOImageList.c
     lib/mac/QSymbols.c
     lib/mac/QTaskMemory.c
-    lib/mac/mac_branding.cpp
-)
+    lib/mac/mac_branding.cpp)
 
 set(LIBBOINC_SOURCES_GENERIC
     lib/app_ipc.cpp
@@ -124,115 +104,101 @@ set(LIBBOINC_SOURCES_GENERIC
     lib/str_util.cpp
     lib/url.cpp
     lib/util.cpp
-    lib/wslinfo.cpp
-)
+    lib/wslinfo.cpp)
 
-set(LIBBOINCAPI_HEADERS
-    api/boinc_api.h
-)
+set(LIBBOINCAPI_HEADERS api/boinc_api.h)
 
-set(LIBBOINCAPI_SOURCES_WIN
-    lib/boinc_win.cpp
-)
+set(LIBBOINCAPI_SOURCES_WIN lib/boinc_win.cpp)
 
-set(LIBBOINCAPI_SOURCES_GENERIC
-    api/boinc_api.cpp
-)
+set(LIBBOINCAPI_SOURCES_GENERIC api/boinc_api.cpp)
 
 if(APPLE)
-    set(LIBBOINC_HEADERS ${LIBBOINC_HEADERS_GENERIC} ${LIBBOINC_HEADERS_APPLE})
-    set(LIBBOINC_SOURCES ${LIBBOINC_SOURCES_GENERIC} ${LIBBOINC_SOURCES_APPLE})
+  set(LIBBOINC_HEADERS ${LIBBOINC_HEADERS_GENERIC} ${LIBBOINC_HEADERS_APPLE})
+  set(LIBBOINC_SOURCES ${LIBBOINC_SOURCES_GENERIC} ${LIBBOINC_SOURCES_APPLE})
 
-    set(LIBBOINCAPI_SOURCES ${LIBBOINCAPI_SOURCES_GENERIC})
+  set(LIBBOINCAPI_SOURCES ${LIBBOINCAPI_SOURCES_GENERIC})
 elseif(WIN32)
-    set(LIBBOINC_HEADERS ${LIBBOINC_HEADERS_GENERIC} ${LIBBOINC_HEADERS_WIN})
-    set(LIBBOINC_SOURCES ${LIBBOINC_SOURCES_GENERIC} ${LIBBOINC_SOURCES_WIN})
+  set(LIBBOINC_HEADERS ${LIBBOINC_HEADERS_GENERIC} ${LIBBOINC_HEADERS_WIN})
+  set(LIBBOINC_SOURCES ${LIBBOINC_SOURCES_GENERIC} ${LIBBOINC_SOURCES_WIN})
 
-    set(LIBBOINCAPI_SOURCES ${LIBBOINCAPI_SOURCES_GENERIC} ${LIBBOINCAPI_SOURCES_WIN})
+  set(LIBBOINCAPI_SOURCES ${LIBBOINCAPI_SOURCES_GENERIC}
+                          ${LIBBOINCAPI_SOURCES_WIN})
 elseif(UNIX)
-    set(LIBBOINC_HEADERS ${LIBBOINC_HEADERS_GENERIC} ${LIBBOINC_HEADERS_UNIX})
-    set(LIBBOINC_SOURCES ${LIBBOINC_SOURCES_GENERIC} ${LIBBOINC_SOURCES_UNIX})
+  set(LIBBOINC_HEADERS ${LIBBOINC_HEADERS_GENERIC} ${LIBBOINC_HEADERS_UNIX})
+  set(LIBBOINC_SOURCES ${LIBBOINC_SOURCES_GENERIC} ${LIBBOINC_SOURCES_UNIX})
 
-    set(LIBBOINCAPI_SOURCES ${LIBBOINCAPI_SOURCES_GENERIC})
+  set(LIBBOINCAPI_SOURCES ${LIBBOINCAPI_SOURCES_GENERIC})
 endif()
 
 add_library(boinc ${LIBBOINC_SOURCES})
 add_library(boincapi ${LIBBOINCAPI_SOURCES})
 
 if(WIN32 OR APPLE)
-    set_target_properties(boinc PROPERTIES PREFIX "lib")
-    set_target_properties(boinc PROPERTIES IMPORT_PREFIX "lib")
+  set_target_properties(boinc PROPERTIES PREFIX "lib")
+  set_target_properties(boinc PROPERTIES IMPORT_PREFIX "lib")
 
-    set_target_properties(boincapi PROPERTIES PREFIX "lib")
-    set_target_properties(boincapi PROPERTIES IMPORT_PREFIX "lib")
+  set_target_properties(boincapi PROPERTIES PREFIX "lib")
+  set_target_properties(boincapi PROPERTIES IMPORT_PREFIX "lib")
 endif()
 
 if(APPLE)
-    target_include_directories(boinc PUBLIC
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib/mac>
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/clientgui/mac>
-    )
+  target_include_directories(
+    boinc PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib/mac>
+                 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/clientgui/mac>)
 
-    target_include_directories(boincapi PUBLIC
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib/mac>
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/clientgui/mac>
-    )
+  target_include_directories(
+    boincapi PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib/mac>
+                    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/clientgui/mac>)
 elseif(WIN32)
-    target_compile_definitions(boinc PUBLIC
-                                -D_CRT_SECURE_NO_WARNINGS
-                                -DWIN32
-                                -D_CONSOLE
-    )
+  target_compile_definitions(boinc PUBLIC -D_CRT_SECURE_NO_WARNINGS -DWIN32
+                                          -D_CONSOLE)
 
-    target_compile_definitions(boincapi PUBLIC
-                                -D_CRT_SECURE_NO_WARNINGS
-                                -DWIN32
-                                -D_CONSOLE
-    )
+  target_compile_definitions(boincapi PUBLIC -D_CRT_SECURE_NO_WARNINGS -DWIN32
+                                             -D_CONSOLE)
 
-    target_include_directories(boinc PUBLIC
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/win_build>
-    )
+  target_include_directories(
+    boinc PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/win_build>)
 
-    target_include_directories(boincapi PUBLIC
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/win_build>
-    )
+  target_include_directories(
+    boincapi PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/win_build>)
 elseif(UNIX)
-    target_include_directories(boinc PUBLIC
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/config-h-${CMAKE_BUILD_TYPE}>
-    )
+  target_include_directories(
+    boinc
+    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/config-h-${CMAKE_BUILD_TYPE}>
+  )
 
-    target_include_directories(boincapi PUBLIC
-                                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/config-h-${CMAKE_BUILD_TYPE}>
-    )
+  target_include_directories(
+    boincapi
+    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/config-h-${CMAKE_BUILD_TYPE}>
+  )
 endif()
 
-target_include_directories(boinc PUBLIC
-                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
-                            $<INSTALL_INTERFACE:include>
-)
+target_include_directories(
+  boinc
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+         $<INSTALL_INTERFACE:include>)
 
-target_include_directories(boincapi PUBLIC
-                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-                            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
-                            $<INSTALL_INTERFACE:include>
-)
+target_include_directories(
+  boincapi
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(boinc PRIVATE
-                        OpenSSL::SSL
-                        OpenSSL::Crypto
-)
+target_link_libraries(boinc PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 
-target_link_libraries(boincapi PRIVATE
-                        boinc
-)
+target_link_libraries(boincapi PRIVATE boinc)
 
-install(TARGETS boinc boincapi EXPORT boinc-config
-            RUNTIME DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-        )
+install(
+  TARGETS boinc boincapi
+  EXPORT boinc-config
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
-install(FILES ${LIBBOINC_HEADERS} ${LIBBOINCAPI_HEADERS} DESTINATION include/boinc)
-install(EXPORT boinc-config NAMESPACE unofficial::boinc:: DESTINATION share/boinc)
+install(FILES ${LIBBOINC_HEADERS} ${LIBBOINCAPI_HEADERS}
+        DESTINATION include/boinc)
+install(
+  EXPORT boinc-config
+  NAMESPACE unofficial::boinc::
+  DESTINATION share/boinc)

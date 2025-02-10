@@ -27,27 +27,19 @@ set(SOURCES
     timer.c
     timer.h
     version.c
-    version.h
-)
+    version.h)
 
-add_library(
-    mad
-    ${SOURCES}
-)
+add_library(mad ${SOURCES})
 
-target_compile_definitions(mad
-    PRIVATE _LIB _MBCS ASO_ZEROCHECK HAVE_CONFIG_H FPM_DEFAULT
-    PRIVATE _CRT_SECURE_NO_WARNINGS
-)
+target_compile_definitions(
+  mad
+  PRIVATE _LIB _MBCS ASO_ZEROCHECK HAVE_CONFIG_H FPM_DEFAULT
+  PRIVATE _CRT_SECURE_NO_WARNINGS)
 
 install(
-    TARGETS mad
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
+  TARGETS mad
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
-install(
-    FILES mad.h
-    DESTINATION include
-)
+install(FILES mad.h DESTINATION include)

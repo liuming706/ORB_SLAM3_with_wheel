@@ -26,8 +26,7 @@
 #include <Eigen/Geometry>
 #include <include/CameraModels/GeometricCamera.h>
 
-namespace ORB_SLAM3
-{
+namespace ORB_SLAM3 {
 // 左目纯位姿优化的边，左目点的重投影误差相对于左目位姿
 class EdgeSE3ProjectXYZOnlyPose : public g2o::BaseUnaryEdge<2, Eigen::Vector2d, g2o::VertexSE3Expmap>
 {
@@ -91,7 +90,6 @@ public:
 
     g2o::SE3Quat mTrl;
 };
-
 
 // 左目纯位姿优化的边，左目点的重投影误差相对于左目位姿以及三维点
 class EdgeSE3ProjectXYZ : public g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, g2o::VertexSE3Expmap>
@@ -168,18 +166,14 @@ public:
     virtual bool write(std::ostream &os) const;
 
     // 原始值
-    virtual void setToOriginImpl()
-    {
-        _estimate = g2o::Sim3();
-    }
+    virtual void setToOriginImpl() { _estimate = g2o::Sim3(); }
 
     // 更新
     virtual void oplusImpl(const double *update_)
     {
         Eigen::Map<g2o::Vector7d> update(const_cast<double *>(update_));
 
-        if (_fix_scale)
-            update[6] = 0;
+        if (_fix_scale) update[6] = 0;
 
         g2o::Sim3 s(update);
         setEstimate(s * estimate());
@@ -191,7 +185,8 @@ public:
 };
 
 // sim3边
-class EdgeSim3ProjectXYZ : public g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, ORB_SLAM3::VertexSim3Expmap>
+class EdgeSim3ProjectXYZ
+    : public g2o::BaseBinaryEdge<2, Eigen::Vector2d, g2o::VertexSBAPointXYZ, ORB_SLAM3::VertexSim3Expmap>
 {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -234,6 +229,6 @@ public:
     // virtual void linearizeOplus();
 };
 
-}
+}  // namespace ORB_SLAM3
 
-#endif // ORB_SLAM3_OPTIMIZABLETYPES_H
+#endif  // ORB_SLAM3_OPTIMIZABLETYPES_H

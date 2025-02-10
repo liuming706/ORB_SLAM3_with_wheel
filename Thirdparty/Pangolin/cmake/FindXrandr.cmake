@@ -1,32 +1,29 @@
-# - Try to find Xrandr
+# * Try to find Xrandr
 #
-#  Xrandr_FOUND - system has libXrandr
-#  Xrandr_INCLUDE_DIRS - the libXrandr include directories
-#  Xrandr_LIBRARIES - link these to use libXrandr
+# Xrandr_FOUND - system has libXrandr Xrandr_INCLUDE_DIRS - the libXrandr
+# include directories Xrandr_LIBRARIES - link these to use libXrandr
 
-FIND_PATH(
+find_path(
   Xrandr_INCLUDE_DIRS
   NAMES X11/extensions/Xrandr.h
   PATH_SUFFIXES X11/extensions
-  DOC "The Xrandr include directory"
-)
+  DOC "The Xrandr include directory")
 
-FIND_LIBRARY(
+find_library(
   Xrandr_LIBRARIES
   NAMES Xrandr
-  DOC "The Xrandr library"
-)
+  DOC "The Xrandr library")
 
-IF (Xrandr_INCLUDE_DIRS AND Xrandr_LIBRARIES)
-   SET(Xrandr_FOUND TRUE)
-ENDIF (Xrandr_INCLUDE_DIRS AND Xrandr_LIBRARIES)
+if(Xrandr_INCLUDE_DIRS AND Xrandr_LIBRARIES)
+  set(Xrandr_FOUND TRUE)
+endif(Xrandr_INCLUDE_DIRS AND Xrandr_LIBRARIES)
 
-IF (Xrandr_FOUND)
-   IF (NOT Xrandr_FIND_QUIETLY)
-      MESSAGE(STATUS "Found Xrandr: ${Xrandr_LIBRARIES}")
-   ENDIF (NOT Xrandr_FIND_QUIETLY)
-ELSE (Xrandr_FOUND)
-   IF (Xrandr_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "Could not find Xrandr")
-   ENDIF (Xrandr_FIND_REQUIRED)
-ENDIF (Xrandr_FOUND)
+if(Xrandr_FOUND)
+  if(NOT Xrandr_FIND_QUIETLY)
+    message(STATUS "Found Xrandr: ${Xrandr_LIBRARIES}")
+  endif(NOT Xrandr_FIND_QUIETLY)
+else(Xrandr_FOUND)
+  if(Xrandr_FIND_REQUIRED)
+    message(FATAL_ERROR "Could not find Xrandr")
+  endif(Xrandr_FIND_REQUIRED)
+endif(Xrandr_FOUND)

@@ -14,8 +14,7 @@ install(
   TARGETS tinythread
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 if(NOT DISABLE_INSTALL_HEADERS)
-  install(FILES  source/tinythread.h source/fast_mutex.h DESTINATION include)
+  install(FILES source/tinythread.h source/fast_mutex.h DESTINATION include)
 endif()

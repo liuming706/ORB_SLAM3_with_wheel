@@ -3,34 +3,19 @@ project(plustache LANGUAGES CXX)
 
 find_package(Boost REQUIRED COMPONENTS regex)
 
-add_library(
-	plustache
-	
-     src/template.cpp
-	 src/context.cpp
-	)
-	
-	
+add_library(plustache src/template.cpp src/context.cpp)
+
 target_include_directories(
-	plustache
-	
-	PUBLIC
-	  ${CMAKE_CURRENT_LIST_DIR}/include
-	PRIVATE 
-	  ${Boost_INCLUDE_DIRS}
-)
+  plustache
+  PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include
+  PRIVATE ${Boost_INCLUDE_DIRS})
 
-target_link_libraries(
-	plustache
-	
-	PRIVATE
-	  ${Boost_LIBRARIES}
-)
+target_link_libraries(plustache PRIVATE ${Boost_LIBRARIES})
 
-
-install(TARGETS plustache
-        RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-       )
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/plustache DESTINATION include)
+install(
+  TARGETS plustache
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/plustache
+        DESTINATION include)

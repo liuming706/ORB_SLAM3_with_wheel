@@ -33,8 +33,7 @@ set(SOIL2_SRC
     "src/SOIL2/stb_image.h"
     "src/SOIL2/stb_image_write.h"
     "src/SOIL2/wfETC.c"
-    "src/SOIL2/wfETC.h"
-)
+    "src/SOIL2/wfETC.h")
 
 # Add the library as a static linkage
 add_library(soil2 STATIC ${SOIL2_SRC})
@@ -47,38 +46,39 @@ target_link_libraries(soil2 PRIVATE ${OPENGL_gl_LIBRARY})
 
 # If its msvc mute the secure warnings
 if(MSVC)
-    target_compile_definitions(soil2 PRIVATE _CRT_SECURE_NO_WARNINGS)
+  target_compile_definitions(soil2 PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif(MSVC)
 
 if(INSTALL_HEADERS)
-    # Install the library object
-    install(TARGETS soil2 EXPORT soil2Targets
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-    )
+  # Install the library object
+  install(
+    TARGETS soil2
+    EXPORT soil2Targets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
 
-    # Install the headers
-    install(FILES "src/SOIL2/SOIL2.h" DESTINATION include/SOIL2/)
+  # Install the headers
+  install(FILES "src/SOIL2/SOIL2.h" DESTINATION include/SOIL2/)
 
-    # Export the stuff
-    export(TARGETS soil2 FILE "${PROJECT_BINARY_DIR}/soil2Targets.cmake")
-    export(PACKAGE soil2)
+  # Export the stuff
+  export(TARGETS soil2 FILE "${PROJECT_BINARY_DIR}/soil2Targets.cmake")
+  export(PACKAGE soil2)
 
-    # Create the soil2Config.cmake and soil2ConfigVersion.cmake
-    configure_file(soil2Config.cmake.in        "${PROJECT_BINARY_DIR}/soil2Config.cmake"        @ONLY)
+  # Create the soil2Config.cmake and soil2ConfigVersion.cmake
+  configure_file(soil2Config.cmake.in "${PROJECT_BINARY_DIR}/soil2Config.cmake"
+                 @ONLY)
 
-    # Install the soil2Config.cmake and soil2ConfigVersion.cmake
-    install(FILES
-            "${PROJECT_BINARY_DIR}/soil2Config.cmake"
-            DESTINATION "${INSTALL_CMAKE_DIR}"
-    )
+  # Install the soil2Config.cmake and soil2ConfigVersion.cmake
+  install(FILES "${PROJECT_BINARY_DIR}/soil2Config.cmake"
+          DESTINATION "${INSTALL_CMAKE_DIR}")
 
-    # Install the export set for use with the install-tree
-    install(EXPORT soil2Targets DESTINATION "${INSTALL_CMAKE_DIR}")
+  # Install the export set for use with the install-tree
+  install(EXPORT soil2Targets DESTINATION "${INSTALL_CMAKE_DIR}")
 else(INSTALL_HEADERS)
-    # Install the library object
-    install(TARGETS soil2 EXPORT soil2
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-    )
+  # Install the library object
+  install(
+    TARGETS soil2
+    EXPORT soil2
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
 endif(INSTALL_HEADERS)

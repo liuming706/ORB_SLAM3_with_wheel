@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.9)
+cmake_minimum_required(VERSION 3.9)
 project(maxminddb C)
 
 set(CMAKE_DEBUG_POSTFIX d)
@@ -9,10 +9,7 @@ if(MSVC)
   add_compile_options(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-set(SRCS
-  src/maxminddb.c
-  src/data-pool.c
-)
+set(SRCS src/maxminddb.c src/data-pool.c)
 
 include_directories(. src include projects/VS12)
 
@@ -26,9 +23,9 @@ install(
   TARGETS maxminddb
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 if(NOT DISABLE_INSTALL_HEADERS)
-  install(FILES include/maxminddb.h projects/VS12/maxminddb_config.h DESTINATION include/maxminddb)
+  install(FILES include/maxminddb.h projects/VS12/maxminddb_config.h
+          DESTINATION include/maxminddb)
 endif()

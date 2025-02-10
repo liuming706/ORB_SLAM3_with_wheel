@@ -1,9 +1,10 @@
 function(vcpkg_get_tags PORT FEATURES VCPKG_TRIPLET_ID VCPKG_ABI_SETTINGS_FILE)
-    message("d8187afd-ea4a-4fc3-9aa4-a6782e1ed9af")
-    vcpkg_triplet_file(${VCPKG_TRIPLET_ID})
+  message("d8187afd-ea4a-4fc3-9aa4-a6782e1ed9af")
+  vcpkg_triplet_file(${VCPKG_TRIPLET_ID})
 
-    # GUID used as a flag - "cut here line"
-    message("c35112b6-d1ba-415b-aa5d-81de856ef8eb
+  # GUID used as a flag - "cut here line"
+  message(
+    "c35112b6-d1ba-415b-aa5d-81de856ef8eb
 VCPKG_TARGET_ARCHITECTURE=${VCPKG_TARGET_ARCHITECTURE}
 VCPKG_CMAKE_SYSTEM_NAME=${VCPKG_CMAKE_SYSTEM_NAME}
 VCPKG_CMAKE_SYSTEM_VERSION=${VCPKG_CMAKE_SYSTEM_VERSION}
@@ -16,14 +17,16 @@ VCPKG_CRT_LINKAGE=${VCPKG_CRT_LINKAGE}
 VCPKG_DISABLE_COMPILER_TRACKING=${VCPKG_DISABLE_COMPILER_TRACKING}
 e1e74b5c-18cb-4474-a6bd-5c1c8bc81f3f")
 
-    # Just to enforce the user didn't set it in the triplet file
-    if (DEFINED VCPKG_PUBLIC_ABI_OVERRIDE)
-        set(VCPKG_PUBLIC_ABI_OVERRIDE)
-        message(WARNING "VCPKG_PUBLIC_ABI_OVERRIDE set in the triplet will be ignored.")
-    endif()
-    include("${VCPKG_ABI_SETTINGS_FILE}" OPTIONAL)
+  # Just to enforce the user didn't set it in the triplet file
+  if(DEFINED VCPKG_PUBLIC_ABI_OVERRIDE)
+    set(VCPKG_PUBLIC_ABI_OVERRIDE)
+    message(
+      WARNING "VCPKG_PUBLIC_ABI_OVERRIDE set in the triplet will be ignored.")
+  endif()
+  include("${VCPKG_ABI_SETTINGS_FILE}" OPTIONAL)
 
-    message("c35112b6-d1ba-415b-aa5d-81de856ef8eb
+  message(
+    "c35112b6-d1ba-415b-aa5d-81de856ef8eb
 VCPKG_PUBLIC_ABI_OVERRIDE=${VCPKG_PUBLIC_ABI_OVERRIDE}
 VCPKG_ENV_PASSTHROUGH=${VCPKG_ENV_PASSTHROUGH}
 VCPKG_ENV_PASSTHROUGH_UNTRACKED=${VCPKG_ENV_PASSTHROUGH_UNTRACKED}

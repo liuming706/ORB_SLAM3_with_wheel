@@ -1,7 +1,8 @@
 project(P7)
 cmake_minimum_required(VERSION 3.18)
 
-add_library(P7
+add_library(
+  P7
   "Sources/ClBaical.cpp"
   "Sources/ClFile.cpp"
   "Sources/Client.cpp"
@@ -36,11 +37,14 @@ else()
   set_target_properties(P7 PROPERTIES DEBUG_POSTFIX "d")
 endif()
 
-install(TARGETS P7
-        RUNTIME DESTINATION "bin"
-        ARCHIVE DESTINATION "lib"
-        LIBRARY DESTINATION "lib")
+install(
+  TARGETS P7
+  RUNTIME DESTINATION "bin"
+  ARCHIVE DESTINATION "lib"
+  LIBRARY DESTINATION "lib")
 
-install(DIRECTORY Headers/
-        DESTINATION include/P7
-        FILES_MATCHING PATTERN "*.h")
+install(
+  DIRECTORY Headers/
+  DESTINATION include/P7
+  FILES_MATCHING
+  PATTERN "*.h")

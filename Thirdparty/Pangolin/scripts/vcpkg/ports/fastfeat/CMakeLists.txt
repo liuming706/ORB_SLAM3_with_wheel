@@ -6,19 +6,15 @@ if(MSVC)
 endif()
 
 include_directories(.)
-file( GLOB SRCS *.c *.def)
+file(GLOB SRCS *.c *.def)
 add_library(fastfeat ${SRCS})
-
 
 install(
   TARGETS fastfeat
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 if(NOT DISABLE_INSTALL_HEADERS)
-  install(
-    FILES fast.h DESTINATION include
-  )
+  install(FILES fast.h DESTINATION include)
 endif()

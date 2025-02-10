@@ -4,5 +4,5 @@ add_subdirectory(VideoJson)
 add_subdirectory(Plotter)
 
 if(NOT EMSCRIPTEN)
-    add_subdirectory(ModelViewer)
+  add_subdirectory(ModelViewer)
 endif()

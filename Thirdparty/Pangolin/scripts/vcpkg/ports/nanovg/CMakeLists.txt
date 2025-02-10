@@ -15,18 +15,19 @@ else()
   target_compile_definitions(nanovg PRIVATE NDEBUG)
 endif()
 
-install(TARGETS nanovg
+install(
+  TARGETS nanovg
   EXPORT nanovgTargets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   PUBLIC_HEADER DESTINATION include)
 
-install(EXPORT nanovgTargets
+install(
+  EXPORT nanovgTargets
   FILE nanovgTargets.cmake
   NAMESPACE nanovg::
   DESTINATION share/nanovg)
 
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/nanovgConfig.cmake
-  DESTINATION share/nanovg)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/nanovgConfig.cmake
+        DESTINATION share/nanovg)

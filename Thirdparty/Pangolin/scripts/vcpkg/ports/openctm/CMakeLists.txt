@@ -42,7 +42,8 @@ install(
   PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" COMPONENT dev)
 
 include(CMakePackageConfigHelpers)
-set(VERSION_FILE_PATH "${CMAKE_CURRENT_BINARY_DIR}/unofficial-openctmConfigVersion.cmake")
+set(VERSION_FILE_PATH
+    "${CMAKE_CURRENT_BINARY_DIR}/unofficial-openctmConfigVersion.cmake")
 write_basic_package_version_file(
   "${VERSION_FILE_PATH}"
   VERSION ${PROJECT_VERSION}

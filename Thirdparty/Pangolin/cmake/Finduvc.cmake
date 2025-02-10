@@ -1,39 +1,29 @@
-# - Try to find uvc
+# * Try to find uvc
 #
-#  uvc_FOUND - system has libuvc
-#  uvc_INCLUDE_DIRS - the libuvc include directories
-#  uvc_LIBRARIES - link these to use libuvc
+# uvc_FOUND - system has libuvc uvc_INCLUDE_DIRS - the libuvc include
+# directories uvc_LIBRARIES - link these to use libuvc
 
-FIND_PATH(
+find_path(
   uvc_INCLUDE_DIRS
   NAMES libuvc/libuvc.h
-  PATHS 
-    ${CMAKE_SOURCE_DIR}/..
-    /usr/include/
-    /usr/local/include
-    /opt/local/include
-)
+  PATHS ${CMAKE_SOURCE_DIR}/.. /usr/include/ /usr/local/include
+        /opt/local/include)
 
-FIND_LIBRARY(
+find_library(
   uvc_LIBRARIES
   NAMES uvc
-  PATHS
-    ${CMAKE_SOURCE_DIR}/../uvc/build
-    /usr/lib
-    /usr/local/lib
-    /opt/local/lib
-) 
+  PATHS ${CMAKE_SOURCE_DIR}/../uvc/build /usr/lib /usr/local/lib /opt/local/lib)
 
-IF (uvc_INCLUDE_DIRS AND uvc_LIBRARIES)
-   SET(uvc_FOUND TRUE)
-ENDIF (uvc_INCLUDE_DIRS AND uvc_LIBRARIES)
+if(uvc_INCLUDE_DIRS AND uvc_LIBRARIES)
+  set(uvc_FOUND TRUE)
+endif(uvc_INCLUDE_DIRS AND uvc_LIBRARIES)
 
-IF (uvc_FOUND)
-   IF (NOT uvc_FIND_QUIETLY)
-      MESSAGE(STATUS "Found uvc: ${uvc_LIBRARIES}")
-   ENDIF (NOT uvc_FIND_QUIETLY)
-ELSE (uvc_FOUND)
-   IF (uvc_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "Could not find uvc")
-   ENDIF (uvc_FIND_REQUIRED)
-ENDIF (uvc_FOUND)
+if(uvc_FOUND)
+  if(NOT uvc_FIND_QUIETLY)
+    message(STATUS "Found uvc: ${uvc_LIBRARIES}")
+  endif(NOT uvc_FIND_QUIETLY)
+else(uvc_FOUND)
+  if(uvc_FIND_REQUIRED)
+    message(FATAL_ERROR "Could not find uvc")
+  endif(uvc_FIND_REQUIRED)
+endif(uvc_FOUND)
